@@ -31,6 +31,10 @@ namespace TortillasReader
 
         public int CurrentPage { get; set; } = 0;
 
+        public BitmapImage LeftImage { get; set; }
+
+        public BitmapImage RightImage { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -74,17 +78,17 @@ namespace TortillasReader
 
                 Archive = new(CurrentFile);
 
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
+                RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
                 CurrentPage++;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
+                LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
             }
         }
 
         private void LoadNextPage()
         {
-            RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
+            RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
             CurrentPage++;
-            LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
+            LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
         }
 
         private void LoadPreviousPage()
@@ -92,21 +96,52 @@ namespace TortillasReader
             if (CurrentPage != 1)
             {
                 CurrentPage--;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage - 1]);
+                LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
+                RightPage.Source = GetImage(Archive.Entries[CurrentPage - 1], Side.Right);
             }
         }
 
-        private static ImageSource GetImage(RarArchiveEntry rarArchive)
+        private ImageSource GetImage(RarArchiveEntry rarArchive, Side side)
         {
-            Stream image = rarArchive.Open();
-            
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.StreamSource = image;
-            bitmap.EndInit();
+            if (side == Side.Left)
+            {
+                LeftImage = new BitmapImage();
+                LeftImage.BeginInit();
+                LeftImage.CacheOption = BitmapCacheOption.OnLoad;
+                LeftImage.StreamSource = new MemoryStream();
+                rarArchive.Extract(LeftImage.StreamSource);
+                LeftImage.StreamSource.Position = 0;
+                LeftImage.EndInit();
 
-            return bitmap;
+                LeftImage.StreamSource.Close();
+                LeftImage.StreamSource.Dispose();
+
+                return LeftImage;
+            }
+
+            if (side == Side.Right)
+            {
+                RightImage = new BitmapImage();
+                RightImage.BeginInit();
+                RightImage.CacheOption = BitmapCacheOption.OnLoad;
+                RightImage.StreamSource = new MemoryStream();
+                rarArchive.Extract(RightImage.StreamSource);
+                RightImage.StreamSource.Position = 0;
+                RightImage.EndInit();
+
+                RightImage.StreamSource.Close();
+                RightImage.StreamSource.Dispose();
+
+                return RightImage;
+            }
+
+            throw new Exception("This side is not recognised.");
         }
+    }
+
+    public enum Side
+    {
+        Left = 1,
+        Right = 2,
     }
 }
