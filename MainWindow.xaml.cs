@@ -29,7 +29,7 @@ namespace TortillasReader
 
         public RarArchive Archive { get; set; }
 
-        public int CurrentPage { get; set; } = 0;
+        public int CurrentPage { get; set; }
 
         public BitmapImage LeftImage { get; set; }
 
@@ -74,6 +74,7 @@ namespace TortillasReader
 
             if (openFileDialog.ShowDialog() == true)
             {
+                CurrentPage = 0;
                 CurrentFile = openFileDialog.FileName;
 
                 Archive = new(CurrentFile);
@@ -81,6 +82,8 @@ namespace TortillasReader
                 RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
                 CurrentPage++;
                 LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
+
+                SetPageNumber();
             }
         }
 
@@ -91,6 +94,8 @@ namespace TortillasReader
                 RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
                 CurrentPage++;
                 LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
+
+                SetPageNumber();
             }
         }
 
@@ -101,7 +106,14 @@ namespace TortillasReader
                 CurrentPage--;
                 LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
                 RightPage.Source = GetImage(Archive.Entries[CurrentPage - 1], Side.Right);
+
+                SetPageNumber();
             }
+        }
+
+        public void SetPageNumber()
+        {
+            PageNumber.Content = CurrentPage.ToString() + " / " + (Archive.Entries.Count - 2).ToString();
         }
 
         private ImageSource GetImage(RarArchiveEntry rarArchive, Side side)

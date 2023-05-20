@@ -8,6 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button x:Name="LoadFile" Content="Charger un fichier" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Click="LoadFile_Click"/>
+        <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right"/>
         <Border>
             <Image Stretch="Uniform" x:Name="LeftPage" Margin="0,35,400,0"/>
         </Border>
