@@ -84,6 +84,8 @@ namespace TortillasReader
                 LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
 
                 SetPageNumber();
+
+                GoToPageNumber.ItemsSource = Enumerable.Range(1, Archive.Entries.Count - 2);
             }
         }
 
@@ -151,6 +153,17 @@ namespace TortillasReader
             }
 
             throw new Exception("This side is not recognised.");
+        }
+
+        private void GoToPageNumber_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CurrentPage = (int)GoToPageNumber.SelectedItem - 1;
+
+            RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
+            CurrentPage++;
+            LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
+
+            SetPageNumber();
         }
     }
 

@@ -15,5 +15,6 @@
         <Border>
             <Image Stretch="Uniform" x:Name="RightPage" Margin="400,35,0,0"/>
         </Border>
+        <ComboBox x:Name="GoToPageNumber" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="115" Height="20" SelectionChanged="GoToPageNumber_SelectionChanged"/>
     </Grid>
 </Window>
