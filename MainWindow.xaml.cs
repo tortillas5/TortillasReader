@@ -31,10 +31,6 @@ namespace TortillasReader
 
         public int CurrentPage { get; set; }
 
-        public BitmapImage LeftImage { get; set; }
-
-        public BitmapImage RightImage { get; set; }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -79,9 +75,9 @@ namespace TortillasReader
 
                 Archive = new(CurrentFile);
 
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
+                RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
                 CurrentPage++;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
+                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
 
                 SetPageNumber();
 
@@ -95,9 +91,9 @@ namespace TortillasReader
         {
             if (CurrentPage < Archive.Entries.Count - 2)
             {
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
+                RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
                 CurrentPage++;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
+                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
 
                 SetPageNumber();
             }
@@ -108,8 +104,8 @@ namespace TortillasReader
             if (CurrentPage != 1)
             {
                 CurrentPage--;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage - 1], Side.Right);
+                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
+                RightPage.Source = GetImage(Archive.Entries[CurrentPage - 1]);
 
                 SetPageNumber();
             }
@@ -120,61 +116,34 @@ namespace TortillasReader
             PageNumber.Content = CurrentPage.ToString() + " / " + (Archive.Entries.Count - 2).ToString();
         }
 
-        private ImageSource GetImage(RarArchiveEntry rarArchive, Side side)
+        private static ImageSource GetImage(RarArchiveEntry rarArchive)
         {
-            if (side == Side.Left)
-            {
-                LeftImage = new BitmapImage();
-                LeftImage.BeginInit();
-                LeftImage.CacheOption = BitmapCacheOption.OnLoad;
-                LeftImage.StreamSource = new MemoryStream();
-                rarArchive.Extract(LeftImage.StreamSource);
-                LeftImage.StreamSource.Position = 0;
-                LeftImage.EndInit();
+            BitmapImage bitmapImage = new();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = new MemoryStream();
+            rarArchive.Extract(bitmapImage.StreamSource);
+            bitmapImage.StreamSource.Position = 0;
+            bitmapImage.EndInit();
 
-                LeftImage.StreamSource.Close();
-                LeftImage.StreamSource.Dispose();
+            bitmapImage.StreamSource.Close();
+            bitmapImage.StreamSource.Dispose();
 
-                return LeftImage;
-            }
-
-            if (side == Side.Right)
-            {
-                RightImage = new BitmapImage();
-                RightImage.BeginInit();
-                RightImage.CacheOption = BitmapCacheOption.OnLoad;
-                RightImage.StreamSource = new MemoryStream();
-                rarArchive.Extract(RightImage.StreamSource);
-                RightImage.StreamSource.Position = 0;
-                RightImage.EndInit();
-
-                RightImage.StreamSource.Close();
-                RightImage.StreamSource.Dispose();
-
-                return RightImage;
-            }
-
-            throw new Exception("This side is not recognised.");
+            return bitmapImage;
         }
 
         private void GoToPageNumber_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CurrentPage = (int)GoToPageNumber.SelectedItem - 1;
 
-            RightPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Right);
+            RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
             CurrentPage++;
-            LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
+            LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
 
             SetPageNumber();
 
             // Need to unfocus the combobox or else the left / right keys won't work.
             LoadFile.Focus();
         }
-    }
-
-    public enum Side
-    {
-        Left = 1,
-        Right = 2,
     }
 }
