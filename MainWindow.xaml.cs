@@ -25,28 +25,50 @@ namespace TortillasReader
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Full path to the book.
+        /// </summary>
         public string CurrentFile { get; set; }
 
+        /// <summary>
+        /// Current open archive.
+        /// </summary>
         public RarArchive Archive { get; set; }
 
+        /// <summary>
+        /// Current page number.
+        /// </summary>
         public int CurrentPage { get; set; }
 
+        #region Services
+
+        /// <summary>
+        /// Handler used to save datas to the disk.
+        /// </summary>
         public JsonHandler JsonHandler { get; set; } = new JsonHandler();
+
+        #endregion Services
 
         public MainWindow()
         {
             InitializeComponent();
 
+            // Register events handling.
             this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
             this.SizeChanged += Window_SizeChanged;
 
             ResumeRead();
         }
 
+        /// <summary>
+        /// Events occuring when the app is closing.
+        /// </summary>
+        /// <param name="e">Event.</param>
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             base.OnClosing(e);
 
+            // Get and delete last saves.
             var reads = JsonHandler.GetEntities<ResumeReading>();
 
             foreach (var read in reads)
@@ -54,10 +76,14 @@ namespace TortillasReader
                 JsonHandler.Remove<ResumeReading>(read);
             }
 
-            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage, LastBook = CurrentFile });
+            // Save current book / page number.
+            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage - 1, LastBook = CurrentFile });
         }
 
-        public void ResumeRead()
+        /// <summary>
+        /// Reopen the last read book.
+        /// </summary>
+        private void ResumeRead()
         {
             var read = JsonHandler.GetEntities<ResumeReading>().FirstOrDefault();
 
@@ -74,6 +100,11 @@ namespace TortillasReader
             }
         }
 
+        /// <summary>
+        /// Handle left / right keys.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Left)
@@ -87,6 +118,11 @@ namespace TortillasReader
             }
         }
 
+        /// <summary>
+        /// Handle windows resizing.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (RightPage.ActualWidth != 0)
@@ -96,6 +132,11 @@ namespace TortillasReader
             }
         }
 
+        /// <summary>
+        /// Handle the click on "charger un fichier".
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LoadFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new()
@@ -109,6 +150,10 @@ namespace TortillasReader
             }
         }
 
+        /// <summary>
+        /// Load a book on the screen.
+        /// </summary>
+        /// <param name="fileName">Full path to the book to load.</param>
         private void LoadBook(string fileName)
         {
             CurrentPage = 0;
@@ -151,11 +196,19 @@ namespace TortillasReader
             }
         }
 
-        public void SetPageNumber()
+        /// <summary>
+        /// Set the page number on the page counter.
+        /// </summary>
+        private void SetPageNumber()
         {
             PageNumber.Content = CurrentPage.ToString() + " / " + (Archive.Entries.Count - 2).ToString();
         }
 
+        /// <summary>
+        /// Return an image from a compressed archive entry.
+        /// </summary>
+        /// <param name="rarArchive">Rar archive entry.</param>
+        /// <returns>Image.</returns>
         private static ImageSource GetImage(RarArchiveEntry rarArchive)
         {
             BitmapImage bitmapImage = new();
@@ -172,6 +225,11 @@ namespace TortillasReader
             return bitmapImage;
         }
 
+        /// <summary>
+        /// Handle the selection of a new page number in the combobox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GoToPageNumber_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CurrentPage = (int)GoToPageNumber.SelectedItem - 1;

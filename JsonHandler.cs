@@ -82,6 +82,11 @@
             return entities;
         }
 
+        /// <summary>
+        /// Return the number of the next Id to create.
+        /// </summary>
+        /// <typeparam name="T">Type of the entity to remove.</typeparam>
+        /// <returns>Number of the next Id to create.</returns>
         public int GetNextId<T>()
         {
             List<T> entities = this.GetEntities<T>();
