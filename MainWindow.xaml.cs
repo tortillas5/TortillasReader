@@ -166,6 +166,9 @@ namespace TortillasReader
             LeftPage.Source = GetImage(Archive.Entries[CurrentPage], Side.Left);
 
             SetPageNumber();
+
+            // Need to unfocus the combobox or else the left / right keys won't work.
+            LoadFile.Focus();
         }
     }
 
