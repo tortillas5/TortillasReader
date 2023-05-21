@@ -103,28 +103,31 @@ namespace TortillasReader
         /// <param name="e"></param>
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Left && CurrentPage + 1 < Archive.Entries.Count - 2)
+            if (Archive != null)
             {
-                CurrentPage++;
-
-                if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage + 1 < Archive.Entries.Count - 2)
+                if (e.Key == Key.Left && CurrentPage + 1 < Archive.Entries.Count - 2)
                 {
                     CurrentPage++;
+
+                    if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage + 1 < Archive.Entries.Count - 2)
+                    {
+                        CurrentPage++;
+                    }
+
+                    SetPage();
                 }
 
-                SetPage();
-            }
-
-            if (e.Key == Key.Right && CurrentPage - 1 >= 0)
-            {
-                CurrentPage--;
-
-                if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage - 1 >= 0)
+                if (e.Key == Key.Right && CurrentPage - 1 >= 0)
                 {
                     CurrentPage--;
-                }
 
-                SetPage();
+                    if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage - 1 >= 0)
+                    {
+                        CurrentPage--;
+                    }
+
+                    SetPage();
+                }
             }
         }
 
