@@ -77,7 +77,7 @@ namespace TortillasReader
             }
 
             // Save current book / page number.
-            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage - 1, LastBook = CurrentFile });
+            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage, LastBook = CurrentFile });
         }
 
         /// <summary>
@@ -92,11 +92,7 @@ namespace TortillasReader
                 LoadBook(read.LastBook);
                 CurrentPage = read.CurrentPage;
 
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
-                CurrentPage++;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
-
-                SetPageNumber();
+                SetPage();
             }
         }
 
@@ -107,14 +103,28 @@ namespace TortillasReader
         /// <param name="e"></param>
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Left)
+            if (e.Key == Key.Left && CurrentPage + 1 < Archive.Entries.Count - 2)
             {
-                LoadNextPage();
+                CurrentPage++;
+
+                if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage + 1 < Archive.Entries.Count - 2)
+                {
+                    CurrentPage++;
+                }
+
+                SetPage();
             }
 
-            if (e.Key == Key.Right)
+            if (e.Key == Key.Right && CurrentPage - 1 >= 0)
             {
-                LoadPreviousPage();
+                CurrentPage--;
+
+                if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage - 1 >= 0)
+                {
+                    CurrentPage--;
+                }
+
+                SetPage();
             }
         }
 
@@ -161,47 +171,27 @@ namespace TortillasReader
 
             Archive = new(CurrentFile);
 
-            RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
-            CurrentPage++;
-            LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
-
-            SetPageNumber();
+            SetPage();
 
             GoToPageNumber.ItemsSource = Enumerable.Range(1, Archive.Entries.Count - 2);
+            ScrollSpeed.ItemsSource = Enumerable.Range(1, 2);
+            ScrollSpeed.SelectedItem = 1;
 
             MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(fileName);
         }
 
-        private void LoadNextPage()
+        /// <summary>
+        /// Set the images for the current page given.
+        /// </summary>
+        private void SetPage()
         {
-            if (Archive != null && CurrentPage < Archive.Entries.Count - 2)
+            if (Archive != null && CurrentPage < Archive.Entries.Count - 2 && CurrentPage >= 0)
             {
                 RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
-                CurrentPage++;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
+                LeftPage.Source = GetImage(Archive.Entries[CurrentPage + 1]);
 
-                SetPageNumber();
+                PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.Entries.Count - 2).ToString();
             }
-        }
-
-        private void LoadPreviousPage()
-        {
-            if (Archive != null && CurrentPage != 1)
-            {
-                CurrentPage--;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage - 1]);
-
-                SetPageNumber();
-            }
-        }
-
-        /// <summary>
-        /// Set the page number on the page counter.
-        /// </summary>
-        private void SetPageNumber()
-        {
-            PageNumber.Content = CurrentPage.ToString() + " / " + (Archive.Entries.Count - 2).ToString();
         }
 
         /// <summary>
@@ -234,12 +224,19 @@ namespace TortillasReader
         {
             CurrentPage = (int)GoToPageNumber.SelectedItem - 1;
 
-            RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
-            CurrentPage++;
-            LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
+            SetPage();
 
-            SetPageNumber();
+            // Need to unfocus the combobox or else the left / right keys won't work.
+            LoadFile.Focus();
+        }
 
+        /// <summary>
+        /// Handle the selection of a new page number in the combobox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ScrollSpeed_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
             // Need to unfocus the combobox or else the left / right keys won't work.
             LoadFile.Focus();
         }

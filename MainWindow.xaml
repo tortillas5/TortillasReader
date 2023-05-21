@@ -9,6 +9,7 @@
         x:Name="MainWindowElement">
     <Grid>
         <ComboBox IsTabStop="False" x:Name="GoToPageNumber" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="115" Height="20" SelectionChanged="GoToPageNumber_SelectionChanged"/>
+        <ComboBox IsTabStop="False" x:Name="ScrollSpeed" HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="120" Height="20" SelectionChanged="ScrollSpeed_SelectionChanged"/>
         <Button x:Name="LoadFile" Content="Charger un fichier" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Click="LoadFile_Click"/>
         <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Border>
