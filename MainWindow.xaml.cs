@@ -31,12 +31,47 @@ namespace TortillasReader
 
         public int CurrentPage { get; set; }
 
+        public JsonHandler JsonHandler { get; set; } = new JsonHandler();
+
         public MainWindow()
         {
             InitializeComponent();
 
             this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
             this.SizeChanged += Window_SizeChanged;
+
+            ResumeRead();
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            var reads = JsonHandler.GetEntities<ResumeReading>();
+
+            foreach (var read in reads)
+            {
+                JsonHandler.Remove<ResumeReading>(read);
+            }
+
+            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage, LastBook = CurrentFile });
+        }
+
+        public void ResumeRead()
+        {
+            var read = JsonHandler.GetEntities<ResumeReading>().FirstOrDefault();
+
+            if (read != null && !string.IsNullOrWhiteSpace(read.LastBook))
+            {
+                LoadBook(read.LastBook);
+                CurrentPage = read.CurrentPage;
+
+                RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
+                CurrentPage++;
+                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
+
+                SetPageNumber();
+            }
         }
 
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -70,21 +105,26 @@ namespace TortillasReader
 
             if (openFileDialog.ShowDialog() == true)
             {
-                CurrentPage = 0;
-                CurrentFile = openFileDialog.FileName;
-
-                Archive = new(CurrentFile);
-
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
-                CurrentPage++;
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
-
-                SetPageNumber();
-
-                GoToPageNumber.ItemsSource = Enumerable.Range(1, Archive.Entries.Count - 2);
-
-                MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(openFileDialog.FileName);
+                LoadBook(openFileDialog.FileName);
             }
+        }
+
+        private void LoadBook(string fileName)
+        {
+            CurrentPage = 0;
+            CurrentFile = fileName;
+
+            Archive = new(CurrentFile);
+
+            RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
+            CurrentPage++;
+            LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
+
+            SetPageNumber();
+
+            GoToPageNumber.ItemsSource = Enumerable.Range(1, Archive.Entries.Count - 2);
+
+            MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(fileName);
         }
 
         private void LoadNextPage()
