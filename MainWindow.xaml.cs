@@ -86,6 +86,8 @@ namespace TortillasReader
                 SetPageNumber();
 
                 GoToPageNumber.ItemsSource = Enumerable.Range(1, Archive.Entries.Count - 2);
+
+                MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(openFileDialog.FileName);
             }
         }
 
