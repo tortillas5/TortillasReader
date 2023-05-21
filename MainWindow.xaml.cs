@@ -89,7 +89,7 @@ namespace TortillasReader
 
         private void LoadNextPage()
         {
-            if (CurrentPage < Archive.Entries.Count - 2)
+            if (Archive != null && CurrentPage < Archive.Entries.Count - 2)
             {
                 RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
                 CurrentPage++;
@@ -101,7 +101,7 @@ namespace TortillasReader
 
         private void LoadPreviousPage()
         {
-            if (CurrentPage != 1)
+            if (Archive != null && CurrentPage != 1)
             {
                 CurrentPage--;
                 LeftPage.Source = GetImage(Archive.Entries[CurrentPage]);
