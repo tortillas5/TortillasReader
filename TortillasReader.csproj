@@ -5,7 +5,12 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>TR.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="TR.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspose.Zip" Version="23.4.0" />
