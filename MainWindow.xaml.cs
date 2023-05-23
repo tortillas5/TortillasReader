@@ -265,9 +265,11 @@ namespace TortillasReader
             // On double click
             if (e.ClickCount == 2)
             {
-                bool zoomed = false;
+                // Get the clicked image.
                 Image image = (Image)sender;
+                bool zoomed = false;
 
+                // Set wich image is zoomed / unzoomed.
                 switch (image.Name)
                 {
                     case "RightPage":
@@ -280,24 +282,15 @@ namespace TortillasReader
                         break;
                 }
 
-                if (zoomed)
-                {
-                    Point point = e.GetPosition(this);
+                // Get cursor position.
+                Point point = e.GetPosition(image);
 
-                    double zoom = 2;
-                    ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
+                // Define if we are doing a zoom / unzoom.
+                double zoom = zoomed ? 2 : 1;
 
-                    image.RenderTransform = scaleTransform;
-                }
-                else
-                {
-                    Point point = e.GetPosition(this);
-
-                    double zoom = 1;
-                    ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
-
-                    image.RenderTransform = scaleTransform;
-                }
+                // Zoom on the cursor position
+                ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
+                image.RenderTransform = scaleTransform;
             }
         }
     }
