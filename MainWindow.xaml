@@ -13,10 +13,10 @@
         <Button x:Name="LoadFile" Content="Charger un fichier" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Click="LoadFile_Click"/>
         <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Border>
-            <Image Stretch="Uniform" x:Name="LeftPage" Margin="0,35,400,0"/>
+            <Image Stretch="Uniform" x:Name="LeftPage" Margin="0,35,400,0" MouseDown="ZoomOnImage"/>
         </Border>
         <Border>
-            <Image Stretch="Uniform" x:Name="RightPage" Margin="400,35,0,0"/>
+            <Image Stretch="Uniform" x:Name="RightPage" Margin="400,35,0,0" MouseDown="ZoomOnImage"/>
         </Border>
     </Grid>
 </Window>

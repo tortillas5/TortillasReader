@@ -40,6 +40,16 @@ namespace TortillasReader
         /// </summary>
         public int CurrentPage { get; set; }
 
+        /// <summary>
+        /// Value indicating if left image is zoomed.
+        /// </summary>
+        public bool LeftImageIsZoomed { get; set; } = false;
+
+        /// <summary>
+        /// Value indicating if right image is zoomed.
+        /// </summary>
+        public bool RightImageIsZoomed { get; set; } = false;
+
         #region Services
 
         /// <summary>
@@ -243,6 +253,52 @@ namespace TortillasReader
         {
             // Need to unfocus the combobox or else the left / right keys won't work.
             LoadFile.Focus();
+        }
+
+        /// <summary>
+        /// Handle the zoom on the image when double click is done.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ZoomOnImage(object sender, MouseButtonEventArgs e)
+        {
+            // On double click
+            if (e.ClickCount == 2)
+            {
+                bool zoomed = false;
+                Image image = (Image)sender;
+
+                switch (image.Name)
+                {
+                    case "RightPage":
+                        RightImageIsZoomed = !RightImageIsZoomed;
+                        zoomed = RightImageIsZoomed;
+                        break;
+                    case "LeftPage":
+                        LeftImageIsZoomed = !LeftImageIsZoomed;
+                        zoomed = LeftImageIsZoomed;
+                        break;
+                }
+
+                if (zoomed)
+                {
+                    Point point = e.GetPosition(this);
+
+                    double zoom = 2;
+                    ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
+
+                    image.RenderTransform = scaleTransform;
+                }
+                else
+                {
+                    Point point = e.GetPosition(this);
+
+                    double zoom = 1;
+                    ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
+
+                    image.RenderTransform = scaleTransform;
+                }
+            }
         }
     }
 }
