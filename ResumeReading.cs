@@ -14,5 +14,10 @@
         /// Position on the disk of the last comic read.
         /// </summary>
         public string LastBook { get; set; }
+
+        /// <summary>
+        /// Scroll speed that was set while reading the last book.
+        /// </summary>
+        public int? ScrollSpeed { get; set; }
     }
 }

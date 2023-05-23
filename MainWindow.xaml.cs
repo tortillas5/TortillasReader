@@ -77,7 +77,7 @@ namespace TortillasReader
             }
 
             // Save current book / page number.
-            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage, LastBook = CurrentFile });
+            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage, LastBook = CurrentFile, ScrollSpeed = (int?)ScrollSpeed.SelectedItem });
         }
 
         /// <summary>
@@ -91,6 +91,7 @@ namespace TortillasReader
             {
                 LoadBook(read.LastBook);
                 CurrentPage = read.CurrentPage;
+                ScrollSpeed.SelectedItem = read.ScrollSpeed;
 
                 SetPage();
             }
