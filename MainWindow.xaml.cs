@@ -145,7 +145,7 @@ namespace TortillasReader
         {
             if (Archive != null)
             {
-                Window windowGoToPage = new GoToPageWindow(Enumerable.Range(1, Archive.Entries.Count - 2));
+                Window windowGoToPage = new GoToPageWindow(Enumerable.Range(1, Archive.Entries.Count - 2), CurrentPage + 1);
                 windowGoToPage.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 var dialogResult = windowGoToPage.ShowDialog();

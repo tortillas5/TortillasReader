@@ -8,11 +8,11 @@ namespace TortillasReader
     /// </summary>
     public partial class GoToPageWindow : Window
     {
-        public GoToPageWindow(IEnumerable<int> range)
+        public GoToPageWindow(IEnumerable<int> range, int currentPage)
         {
             InitializeComponent();
             PageNumber.ItemsSource = range;
-            PageNumber.SelectedValue = 1;
+            PageNumber.SelectedValue = currentPage;
         }
 
         public int Result
