@@ -140,7 +140,12 @@ namespace TortillasReader
             }
 
             // Save current book / page number.
-            JsonHandler.Add<ResumeReading>(new ResumeReading() { CurrentPage = CurrentPage, LastBook = CurrentFile, ScrollSpeed = (int?)ScrollSpeed.SelectedItem });
+            JsonHandler.Add<ResumeReading>(new ResumeReading() {
+                CurrentPage = CurrentPage,
+                LastBook = CurrentFile,
+                ScrollSpeed = (int?)ScrollSpeed.SelectedItem,
+                ScreenOpacity = OpacitySlider.Value
+            });
         }
 
         /// <summary>
@@ -155,6 +160,7 @@ namespace TortillasReader
                 LoadBook(read.LastBook);
                 CurrentPage = read.CurrentPage;
                 ScrollSpeed.SelectedItem = read.ScrollSpeed;
+                OpacitySlider.Value = read.ScreenOpacity;
 
                 SetPage();
             }
@@ -397,6 +403,17 @@ namespace TortillasReader
             // Zoom on the cursor position
             ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
             image.RenderTransform = scaleTransform;
+        }
+
+        /// <summary>
+        /// Handle the screen opacity slider.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            this.Opacity = 1 - OpacitySlider.Value;
+            LoadFile.Focus();
         }
     }
 }

@@ -20,5 +20,6 @@
         <Border x:Name="BorderRight" Panel.ZIndex="{Binding BorderRightZIndex}">
             <Image Stretch="Uniform" x:Name="RightPage" Margin="400,35,0,0" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp"  MouseMove="MouseMoveHandler"/>
         </Border>
+        <Slider IsTabStop="False" x:Name="OpacitySlider" HorizontalAlignment="Left" Margin="525,12,0,0" VerticalAlignment="Top" Width="120" Minimum="0" Maximum="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True" ValueChanged="Slider_ValueChanged" Value="0"/>
     </Grid>
 </Window>
