@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:TortillasReader"
         mc:Ignorable="d"
         Title="Tortillas reader" Height="450" Width="800"
-        x:Name="MainWindowElement">
+        x:Name="MainWindowElement"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Grid>
         <ComboBox IsTabStop="False" x:Name="GoToPageNumber" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="115" Height="20" SelectionChanged="GoToPageNumber_SelectionChanged"/>
         <ComboBox IsTabStop="False" x:Name="ScrollSpeed" HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="120" Height="20" SelectionChanged="ScrollSpeed_SelectionChanged"/>
