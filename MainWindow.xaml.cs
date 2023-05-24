@@ -19,12 +19,12 @@ namespace TortillasReader
         /// <summary>
         /// Full path to the book.
         /// </summary>
-        public string CurrentFile { get; set; }
+        public string? CurrentFile { get; set; }
 
         /// <summary>
         /// Current open archive.
         /// </summary>
-        public RarArchive Archive { get; set; }
+        public RarArchive? Archive { get; set; }
 
         /// <summary>
         /// Current page number.
@@ -101,7 +101,7 @@ namespace TortillasReader
         /// <summary>
         /// Event notifying of properties changes.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public event PropertyChangedEventHandler? PropertyChanged = delegate { };
 
         /// <summary>
         /// Notify that a property have changed.
@@ -109,9 +109,7 @@ namespace TortillasReader
         /// <param name="propertyName">Name of the property changed.</param>
         private void RaisePropertyChanged(string propertyName)
         {
-            var handlers = PropertyChanged;
-
-            handlers(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion Notifications
@@ -145,17 +143,20 @@ namespace TortillasReader
         {
             if (Archive != null)
             {
-                Window windowGoToPage = new GoToPageWindow(Enumerable.Range(1, Archive.Entries.Count - 2), CurrentPage + 1);
-                windowGoToPage.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                Window windowGoToPage = new GoToPageWindow(Enumerable.Range(1, Archive.Entries.Count - 2), CurrentPage + 1)
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
 
                 var dialogResult = windowGoToPage.ShowDialog();
 
                 if (dialogResult.HasValue && dialogResult.Value)
                 {
-                    var content = windowGoToPage as GoToPageWindow;
-
-                    CurrentPage = content.Result - 1;
-                    SetPage();
+                    if (windowGoToPage is GoToPageWindow content)
+                    {
+                        CurrentPage = content.Result - 1;
+                        SetPage();
+                    }
                 }
             }
         }
@@ -167,16 +168,19 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void DimmedMode_Click(object sender, RoutedEventArgs e)
         {
-            Window windowDimmedMode = new ScreenOpacityWindow(this.Opacity);
-            windowDimmedMode.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            Window windowDimmedMode = new ScreenOpacityWindow(this.Opacity)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
 
             var dialogResult = windowDimmedMode.ShowDialog();
 
             if (dialogResult.HasValue && dialogResult.Value)
             {
-                var content = windowDimmedMode as ScreenOpacityWindow;
-
-                this.Opacity = content.Opacity;
+                if (windowDimmedMode is ScreenOpacityWindow content)
+                {
+                    this.Opacity = content.Opacity;
+                }
             }
         }
 
@@ -255,7 +259,7 @@ namespace TortillasReader
             JsonHandler.Add<ResumeReading>(new ResumeReading()
             {
                 CurrentPage = CurrentPage,
-                LastBook = CurrentFile,
+                LastBook = CurrentFile ?? string.Empty,
                 ScrollSpeed = ScrollSpeed,
                 ScreenOpacity = this.Opacity
             }); ;
