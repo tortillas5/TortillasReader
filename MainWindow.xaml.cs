@@ -47,6 +47,11 @@ namespace TortillasReader
         public bool MouseButtonIsDown { get; set; } = false;
 
         /// <summary>
+        /// Speed of the pages scroll.
+        /// </summary>
+        public int ScrollSpeed { get; set; } = 1;
+
+        /// <summary>
         /// Zindex value of the right image.
         /// </summary>
         private int borderRightZIndex;
@@ -111,6 +116,113 @@ namespace TortillasReader
 
         #endregion Notifications
 
+        #region Menus
+
+        /// <summary>
+        /// Show the open file dialog.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LoadFile_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "Cbr files (*.cbr)|*.cbr"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                LoadBook(openFileDialog.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Open the windows to go to a specific page.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GoToPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (Archive != null)
+            {
+                Window windowGoToPage = new GoToPageWindow(Enumerable.Range(1, Archive.Entries.Count - 2));
+                windowGoToPage.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                var dialogResult = windowGoToPage.ShowDialog();
+
+                if (dialogResult.HasValue && dialogResult.Value)
+                {
+                    var content = windowGoToPage as GoToPageWindow;
+
+                    CurrentPage = content.Result - 1;
+                    SetPage();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Open the windows to configure the dimmed mode.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DimmedMode_Click(object sender, RoutedEventArgs e)
+        {
+            Window windowDimmedMode = new ScreenOpacityWindow(this.Opacity);
+            windowDimmedMode.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            var dialogResult = windowDimmedMode.ShowDialog();
+
+            if (dialogResult.HasValue && dialogResult.Value)
+            {
+                var content = windowDimmedMode as ScreenOpacityWindow;
+
+                this.Opacity = content.Opacity;
+            }
+        }
+
+        /// <summary>
+        /// Show the list of commands of the app.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CommandList_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(
+                "Flèches de gauche / droite : Changer de page\n" +
+                "Double cliquer : Zoom sur la souris\n" +
+                "Cliquer et déplacer pendant le zoom : Se déplacer sur l'image\n" +
+                "Charger un fichier : Charge un livre\n" +
+                "Aller à la page : Se déplacer à la page sélectionnée\n" +
+                "Vitesse de défilement des pages : Déplacer les pages par 1 ou 2 à la fois\n" +
+                "Mode écran sombre : Assombrit l'écran pour le confort des yeux\n"
+                , "Liste des commandes");
+        }
+
+        /// <summary>
+        /// Show infos about the app.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Créé par Tortillas - 2023\nurl : https://github.com/tortillas5/TortillasReader", "A propos");
+        }
+
+        /// <summary>
+        /// Quit the app.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion Menus
+
+        /// <summary>
+        /// Initialize a new instance of the class <see cref="MainWindow"/>.
+        /// </summary>
         public MainWindow()
         {
             DataContext = this;
@@ -140,12 +252,13 @@ namespace TortillasReader
             }
 
             // Save current book / page number.
-            JsonHandler.Add<ResumeReading>(new ResumeReading() {
+            JsonHandler.Add<ResumeReading>(new ResumeReading()
+            {
                 CurrentPage = CurrentPage,
                 LastBook = CurrentFile,
-                ScrollSpeed = (int?)ScrollSpeed.SelectedItem,
-                ScreenOpacity = OpacitySlider.Value
-            });
+                ScrollSpeed = ScrollSpeed,
+                ScreenOpacity = this.Opacity
+            }); ;
         }
 
         /// <summary>
@@ -159,8 +272,8 @@ namespace TortillasReader
             {
                 LoadBook(read.LastBook);
                 CurrentPage = read.CurrentPage;
-                ScrollSpeed.SelectedItem = read.ScrollSpeed;
-                OpacitySlider.Value = read.ScreenOpacity;
+                SetScrollSpeed(read.ScrollSpeed);
+                this.Opacity = read.ScreenOpacity;
 
                 SetPage();
             }
@@ -179,7 +292,7 @@ namespace TortillasReader
                 {
                     CurrentPage++;
 
-                    if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage + 1 < Archive.Entries.Count - 2)
+                    if ((int)ScrollSpeed == 2 && CurrentPage + 1 < Archive.Entries.Count - 2)
                     {
                         CurrentPage++;
                     }
@@ -191,13 +304,46 @@ namespace TortillasReader
                 {
                     CurrentPage--;
 
-                    if ((int)ScrollSpeed.SelectedItem == 2 && CurrentPage - 1 >= 0)
+                    if ((int)ScrollSpeed == 2 && CurrentPage - 1 >= 0)
                     {
                         CurrentPage--;
                     }
 
                     SetPage();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Change the scroll speed of the pages on click on a menu.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ChangeScrollSpeed(object sender, RoutedEventArgs e)
+        {
+            var menu = (MenuItem)sender;
+            SetScrollSpeed(int.Parse((string)menu.Header));
+        }
+
+        /// <summary>
+        /// Set the scroll speed.
+        /// </summary>
+        /// <param name="speed">Speed of the scroll.</param>
+        public void SetScrollSpeed(int speed)
+        {
+            ScrollSpeed = speed;
+
+            switch (ScrollSpeed)
+            {
+                case 1:
+                    ScrollSpeed1.IsChecked = true;
+                    ScrollSpeed2.IsChecked = false;
+                    break;
+
+                case 2:
+                    ScrollSpeed1.IsChecked = false;
+                    ScrollSpeed2.IsChecked = true;
+                    break;
             }
         }
 
@@ -210,26 +356,8 @@ namespace TortillasReader
         {
             if (RightPage.ActualWidth != 0)
             {
-                RightPage.Margin = new Thickness(RightPage.ActualWidth, 35, 0, 0);
-                LeftPage.Margin = new Thickness(0, 35, LeftPage.ActualWidth, 0);
-            }
-        }
-
-        /// <summary>
-        /// Handle the click on "charger un fichier".
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void LoadFile_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new()
-            {
-                Filter = "Cbr files (*.cbr)|*.cbr"
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                LoadBook(openFileDialog.FileName);
+                RightPage.Margin = new Thickness(RightPage.ActualWidth, 18, 0, 0);
+                LeftPage.Margin = new Thickness(0, 18, LeftPage.ActualWidth, 0);
             }
         }
 
@@ -245,10 +373,6 @@ namespace TortillasReader
             Archive = new(CurrentFile);
 
             SetPage();
-
-            GoToPageNumber.ItemsSource = Enumerable.Range(1, Archive.Entries.Count - 2);
-            ScrollSpeed.ItemsSource = Enumerable.Range(1, 2);
-            ScrollSpeed.SelectedItem = 1;
 
             MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(fileName);
         }
@@ -286,32 +410,6 @@ namespace TortillasReader
             bitmapImage.StreamSource.Dispose();
 
             return bitmapImage;
-        }
-
-        /// <summary>
-        /// Handle the selection of a new page number in the combobox.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GoToPageNumber_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            CurrentPage = (int)GoToPageNumber.SelectedItem - 1;
-
-            SetPage();
-
-            // Need to unfocus the combobox or else the left / right keys won't work.
-            LoadFile.Focus();
-        }
-
-        /// <summary>
-        /// Handle the selection of a new page number in the combobox.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ScrollSpeed_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Need to unfocus the combobox or else the left / right keys won't work.
-            LoadFile.Focus();
         }
 
         /// <summary>
@@ -403,17 +501,6 @@ namespace TortillasReader
             // Zoom on the cursor position
             ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
             image.RenderTransform = scaleTransform;
-        }
-
-        /// <summary>
-        /// Handle the screen opacity slider.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            this.Opacity = 1 - OpacitySlider.Value;
-            LoadFile.Focus();
         }
     }
 }

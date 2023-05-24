@@ -18,7 +18,7 @@
         /// <summary>
         /// Scroll speed that was set while reading the last book.
         /// </summary>
-        public int? ScrollSpeed { get; set; }
+        public int ScrollSpeed { get; set; }
 
         /// <summary>
         /// The opacity of the screen that was set by the user.
