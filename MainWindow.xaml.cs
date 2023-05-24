@@ -50,6 +50,11 @@ namespace TortillasReader
         /// </summary>
         public bool RightImageIsZoomed { get; set; } = false;
 
+        /// <summary>
+        /// Value indicating if the mouse button is down.
+        /// </summary>
+        public bool MouseButtonIsDown { get; set; } = false;
+
         #region Services
 
         /// <summary>
@@ -256,42 +261,86 @@ namespace TortillasReader
         }
 
         /// <summary>
-        /// Handle the zoom on the image when double click is done.
+        /// Handle the mouse click down event.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ZoomOnImage(object sender, MouseButtonEventArgs e)
+        private void HandleMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // On double click
             if (e.ClickCount == 2)
             {
-                // Get the clicked image.
-                Image image = (Image)sender;
-                bool zoomed = false;
+                // On double click
+                ZoomOnImage(sender, e);
+            }
+            else
+            {
+                MouseButtonIsDown = true;
+            }
+        }
 
-                // Set wich image is zoomed / unzoomed.
-                switch (image.Name)
-                {
-                    case "RightPage":
-                        RightImageIsZoomed = !RightImageIsZoomed;
-                        zoomed = RightImageIsZoomed;
-                        break;
-                    case "LeftPage":
-                        LeftImageIsZoomed = !LeftImageIsZoomed;
-                        zoomed = LeftImageIsZoomed;
-                        break;
-                }
+        /// <summary>
+        /// Handle the mouse click up event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            MouseButtonIsDown = false;
+        }
+
+        /// <summary>
+        /// Handle the movement of the mouse.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MouseMoveHandler(object sender, MouseEventArgs e)
+        {
+            if (MouseButtonIsDown)
+            {
+                Image image = (Image)sender;
 
                 // Get cursor position.
                 Point point = e.GetPosition(image);
 
-                // Define if we are doing a zoom / unzoom.
-                double zoom = zoomed ? 2 : 1;
-
                 // Zoom on the cursor position
-                ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
+                ScaleTransform scaleTransform = new(2, 2, point.X, point.Y);
                 image.RenderTransform = scaleTransform;
             }
+        }
+
+
+        /// <summary>
+        /// Handle the zoom on an image.
+        /// </summary>
+        /// <param name="sender"></param>
+        private void ZoomOnImage(object sender, MouseButtonEventArgs e)
+        {
+            // Get the clicked image.
+            Image image = (Image)sender;
+            bool zoomed = false;
+
+            // Set wich image is zoomed / unzoomed.
+            switch (image.Name)
+            {
+                case "RightPage":
+                    RightImageIsZoomed = !RightImageIsZoomed;
+                    zoomed = RightImageIsZoomed;
+                    break;
+                case "LeftPage":
+                    LeftImageIsZoomed = !LeftImageIsZoomed;
+                    zoomed = LeftImageIsZoomed;
+                    break;
+            }
+
+            // Get cursor position.
+            Point point = e.GetPosition(image);
+
+            // Define if we are doing a zoom / unzoom.
+            double zoom = zoomed ? 2 : 1;
+
+            // Zoom on the cursor position
+            ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
+            image.RenderTransform = scaleTransform;
         }
     }
 }
