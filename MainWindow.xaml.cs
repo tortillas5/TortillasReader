@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +14,7 @@ namespace TortillasReader
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         /// <summary>
         /// Full path to the book.
@@ -45,6 +46,42 @@ namespace TortillasReader
         /// </summary>
         public bool MouseButtonIsDown { get; set; } = false;
 
+        /// <summary>
+        /// Zindex value of the right image.
+        /// </summary>
+        private int borderRightZIndex;
+
+        /// <summary>
+        /// Zindex value of the left image.
+        /// </summary>
+        private int borderLeftZIndex;
+
+        /// <summary>
+        /// Getter / setter of the property <see cref="borderRightZIndex"/>.
+        /// </summary>
+        public int BorderRightZIndex
+        {
+            get { return borderRightZIndex; }
+            set
+            {
+                borderRightZIndex = value;
+                RaisePropertyChanged(nameof(BorderRightZIndex));
+            }
+        }
+
+        /// <summary>
+        /// Getter / setter of the property <see cref="borderLeftZIndex"/>.
+        /// </summary>
+        public int BorderLeftZIndex
+        {
+            get { return borderLeftZIndex; }
+            set
+            {
+                borderLeftZIndex = value;
+                RaisePropertyChanged(nameof(BorderLeftZIndex));
+            }
+        }
+
         #region Services
 
         /// <summary>
@@ -54,8 +91,29 @@ namespace TortillasReader
 
         #endregion Services
 
+        #region Notifications
+
+        /// <summary>
+        /// Event notifying of properties changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        /// <summary>
+        /// Notify that a property have changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property changed.</param>
+        private void RaisePropertyChanged(string propertyName)
+        {
+            var handlers = PropertyChanged;
+
+            handlers(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion Notifications
+
         public MainWindow()
         {
+            DataContext = this;
             InitializeComponent();
 
             // Register events handling.
@@ -314,11 +372,19 @@ namespace TortillasReader
                 case "RightPage":
                     RightImageIsZoomed = !RightImageIsZoomed;
                     zoomed = RightImageIsZoomed;
+
+                    // Set the right page over the left one.
+                    BorderRightZIndex = 100;
+                    BorderLeftZIndex = 0;
                     break;
 
                 case "LeftPage":
                     LeftImageIsZoomed = !LeftImageIsZoomed;
                     zoomed = LeftImageIsZoomed;
+
+                    // Set the left page over the right one.
+                    BorderLeftZIndex = 100;
+                    BorderRightZIndex = 0;
                     break;
             }
 
