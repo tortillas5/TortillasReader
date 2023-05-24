@@ -455,6 +455,26 @@ namespace TortillasReader
             {
                 Image image = (Image)sender;
 
+                // Set wich image is zoomed / unzoomed.
+                switch (image.Name)
+                {
+                    case "RightPage":
+                        RightImageIsZoomed = true;
+
+                        // Set the right page over the left one.
+                        BorderRightZIndex = 100;
+                        BorderLeftZIndex = 0;
+                        break;
+
+                    case "LeftPage":
+                        LeftImageIsZoomed = true;
+
+                        // Set the left page over the right one.
+                        BorderLeftZIndex = 100;
+                        BorderRightZIndex = 0;
+                        break;
+                }
+
                 // Get cursor position.
                 Point point = e.GetPosition(image);
 
