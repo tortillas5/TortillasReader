@@ -374,11 +374,18 @@ namespace TortillasReader
             CurrentPage = 0;
             CurrentFile = fileName;
 
-            Archive = new(CurrentFile);
+            if (File.Exists(CurrentFile))
+            {
+                Archive = new(CurrentFile);
 
-            SetPage();
+                SetPage();
 
-            MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(fileName);
+                MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(fileName);
+            }
+            else
+            {
+                MessageBox.Show("Le fichier qui était en cours de lecture est introuvable :\n" + fileName);
+            }
         }
 
         /// <summary>
@@ -388,9 +395,19 @@ namespace TortillasReader
         {
             if (Archive != null && CurrentPage < Archive.Entries.Count - 2 && CurrentPage >= 0)
             {
+                // Load images
                 RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
                 LeftPage.Source = GetImage(Archive.Entries[CurrentPage + 1]);
 
+                // Reset zoom
+                ScaleTransform scaleTransform = new(1, 1);
+                RightPage.RenderTransform = scaleTransform;
+                LeftPage.RenderTransform = scaleTransform;
+                
+                RightImageIsZoomed = false;
+                LeftImageIsZoomed = false;
+
+                // Set the page number.
                 PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.Entries.Count - 2).ToString();
             }
         }
