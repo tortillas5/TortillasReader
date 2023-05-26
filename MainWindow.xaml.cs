@@ -1,12 +1,17 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Aspose.Zip;
 using Aspose.Zip.Rar;
+using Aspose.Zip.SevenZip;
+using Aspose.Zip.Tar;
 using Microsoft.Win32;
 
 namespace TortillasReader
@@ -24,7 +29,7 @@ namespace TortillasReader
         /// <summary>
         /// Current open archive.
         /// </summary>
-        public RarArchive? Archive { get; set; }
+        public IArchive? Archive { get; set; }
 
         /// <summary>
         /// Current page number.
@@ -125,7 +130,7 @@ namespace TortillasReader
         {
             OpenFileDialog openFileDialog = new()
             {
-                Filter = "Cbr files (*.cbr)|*.cbr"
+                Filter = "Archives de bandes dessinées|*.cbr;*.cbz;*.cbt;*.cb7"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -143,7 +148,7 @@ namespace TortillasReader
         {
             if (Archive != null)
             {
-                Window windowGoToPage = new GoToPageWindow(Enumerable.Range(1, Archive.Entries.Count - 2), CurrentPage + 1)
+                Window windowGoToPage = new GoToPageWindow(Enumerable.Range(1, Archive.FileEntries.Count() - 2), CurrentPage + 1)
                 {
                     WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
@@ -292,11 +297,11 @@ namespace TortillasReader
         {
             if (Archive != null)
             {
-                if (e.Key == Key.Left && CurrentPage + 1 < Archive.Entries.Count - 2)
+                if (e.Key == Key.Left && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
                 {
                     CurrentPage++;
 
-                    if ((int)ScrollSpeed == 2 && CurrentPage + 1 < Archive.Entries.Count - 2)
+                    if ((int)ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
                     {
                         CurrentPage++;
                     }
@@ -376,7 +381,7 @@ namespace TortillasReader
 
             if (File.Exists(CurrentFile))
             {
-                Archive = new(CurrentFile);
+                Archive = GetArchive(CurrentFile);
 
                 SetPage();
 
@@ -393,37 +398,37 @@ namespace TortillasReader
         /// </summary>
         private void SetPage()
         {
-            if (Archive != null && CurrentPage < Archive.Entries.Count - 2 && CurrentPage >= 0)
+            if (Archive != null && CurrentPage < Archive.FileEntries.Count() - 2 && CurrentPage >= 0)
             {
                 // Load images
-                RightPage.Source = GetImage(Archive.Entries[CurrentPage]);
-                LeftPage.Source = GetImage(Archive.Entries[CurrentPage + 1]);
+                RightPage.Source = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
+                LeftPage.Source = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage + 1));
 
                 // Reset zoom
                 ScaleTransform scaleTransform = new(1, 1);
                 RightPage.RenderTransform = scaleTransform;
                 LeftPage.RenderTransform = scaleTransform;
-                
+
                 RightImageIsZoomed = false;
                 LeftImageIsZoomed = false;
 
                 // Set the page number.
-                PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.Entries.Count - 2).ToString();
+                PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.FileEntries.Count() - 2).ToString();
             }
         }
 
         /// <summary>
         /// Return an image from a compressed archive entry.
         /// </summary>
-        /// <param name="rarArchive">Rar archive entry.</param>
+        /// <param name="archive">Rar archive entry.</param>
         /// <returns>Image.</returns>
-        private static ImageSource GetImage(RarArchiveEntry rarArchive)
+        private static ImageSource GetImage(IArchiveFileEntry archive)
         {
             BitmapImage bitmapImage = new();
             bitmapImage.BeginInit();
             bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
             bitmapImage.StreamSource = new MemoryStream();
-            rarArchive.Extract(bitmapImage.StreamSource);
+            archive.Extract(bitmapImage.StreamSource);
             bitmapImage.StreamSource.Position = 0;
             bitmapImage.EndInit();
 
@@ -542,6 +547,29 @@ namespace TortillasReader
             // Zoom on the cursor position
             ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
             image.RenderTransform = scaleTransform;
+        }
+
+        /// <summary>
+        /// Return an IArchive from a file path.
+        /// </summary>
+        /// <param name="filePath">Path to a comic book file.</param>
+        /// <returns>IArchive containing a manga.</returns>
+        /// <exception cref="Exception">Format is unknow.</exception>
+        public static IArchive GetArchive(string filePath)
+        {
+            var file = new FileInfo(filePath);
+
+            // Needed for IBM437 error.
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            return file.Extension switch
+            {
+                ".cbr" => new RarArchive(filePath),
+                ".cbz" => new Archive(filePath),
+                ".cbt" => new TarArchive(filePath),
+                ".cb7" => new SevenZipArchive(filePath),
+                _ => throw new Exception("Format du fichier non géré."),
+            };
         }
     }
 }
