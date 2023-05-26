@@ -39,22 +39,22 @@ namespace TortillasReader
         /// <summary>
         /// Value indicating if left image is zoomed.
         /// </summary>
-        public bool LeftImageIsZoomed { get; set; } = false;
+        public bool LeftImageIsZoomed { get; set; }
 
         /// <summary>
         /// Value indicating if right image is zoomed.
         /// </summary>
-        public bool RightImageIsZoomed { get; set; } = false;
+        public bool RightImageIsZoomed { get; set; }
 
         /// <summary>
         /// Value indicating if the mouse button is down.
         /// </summary>
-        public bool MouseButtonIsDown { get; set; } = false;
+        public bool MouseButtonIsDown { get; set; }
 
         /// <summary>
         /// Speed of the pages scroll.
         /// </summary>
-        public int ScrollSpeed { get; set; } = 1;
+        public int ScrollSpeed { get; set; }
 
         /// <summary>
         /// Zindex value of the right image.
@@ -241,7 +241,19 @@ namespace TortillasReader
             this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
             this.SizeChanged += Window_SizeChanged;
 
+            SetDefaultValues();
+
             ResumeRead();
+        }
+
+        /// <summary>
+        /// Set the default values of the app.
+        /// </summary>
+        private void SetDefaultValues()
+        {
+            // Set the page scrolling speed.
+            ScrollSpeed = 1;
+            ScrollSpeed1.IsChecked = true;
         }
 
         /// <summary>
