@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Mode écran sombre" Height="100" Width="155">
     <Grid>
-        <Slider x:Name="OpacitySlider" HorizontalAlignment="Center" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Minimum="0" Maximum="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True" ValueChanged="Slider_ValueChanged" Value="0"/>
+        <Slider x:Name="OpacitySlider" HorizontalAlignment="Center" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Minimum="0" Maximum="0.7" TickFrequency="0.05" IsSnapToTickEnabled="True" ValueChanged="Slider_ValueChanged" Value="0"/>
         <Button Click="Ok" Content="Ok" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Center" Width="30"/>
     </Grid>
 </Window>
