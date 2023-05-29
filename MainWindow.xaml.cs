@@ -56,6 +56,8 @@ namespace TortillasReader
         /// </summary>
         public int ScrollSpeed { get; set; }
 
+        #region Borders
+
         /// <summary>
         /// Zindex value of the right image.
         /// </summary>
@@ -91,6 +93,8 @@ namespace TortillasReader
                 RaisePropertyChanged(nameof(BorderLeftZIndex));
             }
         }
+
+        #endregion Borders
 
         #region Services
 
@@ -190,6 +194,17 @@ namespace TortillasReader
         }
 
         /// <summary>
+        /// Change the scroll speed of the pages on click on a menu.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeScrollSpeed(object sender, RoutedEventArgs e)
+        {
+            var menu = (MenuItem)sender;
+            SetScrollSpeed(int.Parse((string)menu.Header));
+        }
+
+        /// <summary>
         /// Show the list of commands of the app.
         /// </summary>
         /// <param name="sender"></param>
@@ -260,7 +275,7 @@ namespace TortillasReader
         /// Events occuring when the app is closing.
         /// </summary>
         /// <param name="e">Event.</param>
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
 
@@ -336,17 +351,6 @@ namespace TortillasReader
         }
 
         /// <summary>
-        /// Change the scroll speed of the pages on click on a menu.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void ChangeScrollSpeed(object sender, RoutedEventArgs e)
-        {
-            var menu = (MenuItem)sender;
-            SetScrollSpeed(int.Parse((string)menu.Header));
-        }
-
-        /// <summary>
         /// Set the scroll speed.
         /// </summary>
         /// <param name="speed">Speed of the scroll.</param>
@@ -397,7 +401,7 @@ namespace TortillasReader
 
                 SetPage();
 
-                MainWindowElement.Title = "Tortillas reader - " + System.IO.Path.GetFileName(fileName);
+                MainWindowElement.Title = "Tortillas reader - " + Path.GetFileName(fileName);
             }
             else
             {
