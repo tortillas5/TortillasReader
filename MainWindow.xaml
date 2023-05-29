@@ -29,12 +29,8 @@
                 </MenuItem>
             </Menu>
         </DockPanel>
-        <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,0,0"/>
-        <Border x:Name="BorderLeft" Panel.ZIndex="{Binding BorderLeftZIndex}">
-            <Image Stretch="Uniform" x:Name="LeftPage" Margin="0,18,400,0" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp" MouseMove="MouseMoveHandler"/>
-        </Border>
-        <Border x:Name="BorderRight" Panel.ZIndex="{Binding BorderRightZIndex}">
-            <Image Stretch="Uniform" x:Name="RightPage" Margin="400,18,0,0" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp"  MouseMove="MouseMoveHandler"/>
-        </Border>
+        <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,0,0" Panel.ZIndex="200"/>
+        <Canvas x:Name="ImagesCanvas" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp" MouseMove="MouseMoveHandler">
+        </Canvas>
     </Grid>
 </Window>

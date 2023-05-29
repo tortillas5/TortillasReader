@@ -37,14 +37,9 @@ namespace TortillasReader
         public int CurrentPage { get; set; }
 
         /// <summary>
-        /// Value indicating if left image is zoomed.
+        /// Value indicating if the image is zoomed.
         /// </summary>
-        public bool LeftImageIsZoomed { get; set; }
-
-        /// <summary>
-        /// Value indicating if right image is zoomed.
-        /// </summary>
-        public bool RightImageIsZoomed { get; set; }
+        public bool ImageIsZoomed { get; set; }
 
         /// <summary>
         /// Value indicating if the mouse button is down.
@@ -379,10 +374,26 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (RightPage.ActualWidth != 0)
+            if (ImagesCanvas.ActualWidth != 0)
             {
-                RightPage.Margin = new Thickness(RightPage.ActualWidth, 18, 0, 0);
-                LeftPage.Margin = new Thickness(0, 18, LeftPage.ActualWidth, 0);
+                foreach (Image image in ImagesCanvas.Children)
+                {
+                    image.Height = ImagesCanvas.ActualHeight;
+
+                    // Set images positions on the canvas.
+
+                    if (image.Name == "ImageRight")
+                    {
+                        Canvas.SetTop(image, 0);
+                        Canvas.SetLeft(image, this.ActualWidth / 2);
+                    }
+
+                    if (image.Name == "ImageLeft")
+                    {
+                        Canvas.SetTop(image, 0);
+                        Canvas.SetRight(image, this.ActualWidth / 2);
+                    }
+                }
             }
         }
 
@@ -416,17 +427,41 @@ namespace TortillasReader
         {
             if (Archive != null && CurrentPage < Archive.FileEntries.Count() - 2 && CurrentPage >= 0)
             {
-                // Load images
-                RightPage.Source = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
-                LeftPage.Source = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage + 1));
+                // Get images sources.
+                ImageSource rightImage = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
+                ImageSource leftImage = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage + 1));
+
+                Image imageRight = new()
+                {
+                    Height = ImagesCanvas.ActualHeight,
+                    Name = "ImageRight",
+                    Source = rightImage
+                };
+
+                Image imageLeft = new()
+                {
+                    Height = ImagesCanvas.ActualHeight,
+                    Name = "ImageLeft",
+                    Source = leftImage
+                };
+
+                ImagesCanvas.Children.Clear();
+
+                ImagesCanvas.Children.Add(imageRight);
+                ImagesCanvas.Children.Add(imageLeft);
+
+                // Set images positions on the canvas.
+                Canvas.SetTop(imageRight, 0);
+                Canvas.SetLeft(imageRight, this.ActualWidth / 2);
+
+                Canvas.SetTop(imageLeft, 0);
+                Canvas.SetRight(imageLeft, this.ActualWidth / 2);
 
                 // Reset zoom
                 ScaleTransform scaleTransform = new(1, 1);
-                RightPage.RenderTransform = scaleTransform;
-                LeftPage.RenderTransform = scaleTransform;
+                ImagesCanvas.RenderTransform = scaleTransform;
 
-                RightImageIsZoomed = false;
-                LeftImageIsZoomed = false;
+                ImageIsZoomed = false;
 
                 // Set the page number.
                 PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.FileEntries.Count() - 2).ToString();
@@ -491,34 +526,16 @@ namespace TortillasReader
         {
             if (MouseButtonIsDown)
             {
-                Image image = (Image)sender;
+                Canvas canvas = (Canvas)sender;
 
-                // Set wich image is zoomed / unzoomed.
-                switch (image.Name)
-                {
-                    case "RightPage":
-                        RightImageIsZoomed = true;
-
-                        // Set the right page over the left one.
-                        BorderRightZIndex = 100;
-                        BorderLeftZIndex = 0;
-                        break;
-
-                    case "LeftPage":
-                        LeftImageIsZoomed = true;
-
-                        // Set the left page over the right one.
-                        BorderLeftZIndex = 100;
-                        BorderRightZIndex = 0;
-                        break;
-                }
+                ImageIsZoomed = true;
 
                 // Get cursor position.
-                Point point = e.GetPosition(image);
+                Point point = e.GetPosition(canvas);
 
                 // Zoom on the cursor position
                 ScaleTransform scaleTransform = new(2, 2, point.X, point.Y);
-                image.RenderTransform = scaleTransform;
+                canvas.RenderTransform = scaleTransform;
             }
         }
 
@@ -529,36 +546,15 @@ namespace TortillasReader
         private void ZoomOnImage(object sender, MouseButtonEventArgs e)
         {
             // Get the clicked image.
-            Image image = (Image)sender;
-            bool zoomed = false;
+            Canvas image = (Canvas)sender;
 
-            // Set wich image is zoomed / unzoomed.
-            switch (image.Name)
-            {
-                case "RightPage":
-                    RightImageIsZoomed = !RightImageIsZoomed;
-                    zoomed = RightImageIsZoomed;
-
-                    // Set the right page over the left one.
-                    BorderRightZIndex = 100;
-                    BorderLeftZIndex = 0;
-                    break;
-
-                case "LeftPage":
-                    LeftImageIsZoomed = !LeftImageIsZoomed;
-                    zoomed = LeftImageIsZoomed;
-
-                    // Set the left page over the right one.
-                    BorderLeftZIndex = 100;
-                    BorderRightZIndex = 0;
-                    break;
-            }
+            ImageIsZoomed = !ImageIsZoomed;
 
             // Get cursor position.
             Point point = e.GetPosition(image);
 
             // Define if we are doing a zoom / unzoom.
-            double zoom = zoomed ? 2 : 1;
+            double zoom = ImageIsZoomed ? 2 : 1;
 
             // Zoom on the cursor position
             ScaleTransform scaleTransform = new(zoom, zoom, point.X, point.Y);
