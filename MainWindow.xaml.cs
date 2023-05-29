@@ -385,13 +385,13 @@ namespace TortillasReader
                     if (image.Name == "ImageRight")
                     {
                         Canvas.SetTop(image, 0);
-                        Canvas.SetLeft(image, this.ActualWidth / 2);
+                        Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
                     }
 
                     if (image.Name == "ImageLeft")
                     {
                         Canvas.SetTop(image, 0);
-                        Canvas.SetRight(image, this.ActualWidth / 2);
+                        Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
                     }
                 }
             }
@@ -452,10 +452,10 @@ namespace TortillasReader
 
                 // Set images positions on the canvas.
                 Canvas.SetTop(imageRight, 0);
-                Canvas.SetLeft(imageRight, this.ActualWidth / 2);
+                Canvas.SetLeft(imageRight, ImagesCanvas.ActualWidth / 2);
 
                 Canvas.SetTop(imageLeft, 0);
-                Canvas.SetRight(imageLeft, this.ActualWidth / 2);
+                Canvas.SetRight(imageLeft, ImagesCanvas.ActualWidth / 2);
 
                 // Reset zoom
                 ScaleTransform scaleTransform = new(1, 1);
