@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
 namespace TortillasReader
 {
@@ -8,13 +7,9 @@ namespace TortillasReader
     /// </summary>
     public partial class ScreenOpacityWindow : Window
     {
-        public double MainWindowOpacity { get; set; }
-
         public ScreenOpacityWindow(double opacity)
         {
             InitializeComponent();
-            MainWindowOpacity = opacity;
-            this.Opacity = opacity;
             OpacitySlider.Value = 1 - opacity;
         }
 
@@ -25,12 +20,16 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            this.Opacity = 1 - OpacitySlider.Value;
+            MainWindow.AppWindow.Opacity = 1 - OpacitySlider.Value;
         }
 
+        /// <summary>
+        /// Handle the click on the OK button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Ok(object sender, RoutedEventArgs e)
         {
-            Window.GetWindow(this).DialogResult = true;
             Window.GetWindow(this).Close();
         }
     }

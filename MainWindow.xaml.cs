@@ -22,6 +22,11 @@ namespace TortillasReader
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         /// <summary>
+        /// Will be self instantiated so other classes can update the MainWindow values (like opacity).
+        /// </summary>
+        public static MainWindow AppWindow;
+
+        /// <summary>
         /// Full path to the book.
         /// </summary>
         public string? CurrentFile { get; set; }
@@ -182,15 +187,7 @@ namespace TortillasReader
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
 
-            var dialogResult = windowDimmedMode.ShowDialog();
-
-            if (dialogResult.HasValue && dialogResult.Value)
-            {
-                if (windowDimmedMode is ScreenOpacityWindow content)
-                {
-                    this.Opacity = content.Opacity;
-                }
-            }
+            windowDimmedMode.ShowDialog();
         }
 
         /// <summary>
@@ -264,6 +261,8 @@ namespace TortillasReader
         {
             DataContext = this;
             InitializeComponent();
+
+            AppWindow = this;
 
             // Register events handling.
             this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
