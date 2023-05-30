@@ -24,5 +24,10 @@
         /// The opacity of the screen that was set by the user.
         /// </summary>
         public double ScreenOpacity { get; set; }
+
+        /// <summary>
+        /// Define if the double page mode was enable or not.
+        /// </summary>
+        public bool DoublePageMode { get; set; }
     }
 }

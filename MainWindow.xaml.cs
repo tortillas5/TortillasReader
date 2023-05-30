@@ -51,6 +51,11 @@ namespace TortillasReader
         /// </summary>
         public int ScrollSpeed { get; set; }
 
+        /// <summary>
+        /// Enable the double page mode (for when books have images containing double pages).
+        /// </summary>
+        public bool DoublePageMode { get; set; }
+
         #region Borders
 
         /// <summary>
@@ -200,6 +205,18 @@ namespace TortillasReader
         }
 
         /// <summary>
+        /// Switch from the single to the double page mode.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ToggleDoublePageMode(object sender, RoutedEventArgs e)
+        {
+            var menu = (MenuItem)sender;
+            SetDoublePageMode(menu.IsChecked);
+            SetPage();
+        }
+
+        /// <summary>
         /// Show the list of commands of the app.
         /// </summary>
         /// <param name="sender"></param>
@@ -213,7 +230,8 @@ namespace TortillasReader
                 "Charger un fichier : Charge un livre\n" +
                 "Aller à la page : Se déplacer à la page sélectionnée\n" +
                 "Vitesse de défilement des pages : Déplacer les pages par 1 ou 2 à la fois\n" +
-                "Mode écran sombre : Assombrit l'écran pour le confort des yeux\n"
+                "Mode écran sombre : Assombrit l'écran pour le confort des yeux\n" +
+                "Mode double pages : N'affiche qu'une image à la fois pour gérer les comics avec des doubles pages\n"
                 , "Liste des commandes");
         }
 
@@ -288,8 +306,9 @@ namespace TortillasReader
                 CurrentPage = CurrentPage,
                 LastBook = CurrentFile ?? string.Empty,
                 ScrollSpeed = ScrollSpeed,
-                ScreenOpacity = this.Opacity
-            }); ;
+                ScreenOpacity = this.Opacity,
+                DoublePageMode = DoublePageMode
+            });
         }
 
         /// <summary>
@@ -305,6 +324,7 @@ namespace TortillasReader
                 CurrentPage = read.CurrentPage;
                 SetScrollSpeed(read.ScrollSpeed);
                 this.Opacity = read.ScreenOpacity;
+                SetDoublePageMode(read.DoublePageMode);
 
                 SetPage();
             }
@@ -368,6 +388,30 @@ namespace TortillasReader
         }
 
         /// <summary>
+        /// Set the double page mode.
+        /// </summary>
+        /// <param name="doublePageMode">Enabled or disabled.</param>
+        private void SetDoublePageMode(bool doublePageMode)
+        {
+            DoublePageMode = doublePageMode;
+            DoublePageModeMenu.IsChecked = doublePageMode;
+
+            if (DoublePageMode)
+            {
+                SetScrollSpeed(1);
+
+                ScrollSpeed2.IsEnabled = false;
+                ScrollSpeed2.IsChecked = false;
+
+                ScrollSpeed1.IsChecked = true;
+            }
+            else
+            {
+                ScrollSpeed2.IsEnabled = true;
+            }
+        }
+
+        /// <summary>
         /// Handle windows resizing.
         /// </summary>
         /// <param name="sender"></param>
@@ -378,20 +422,34 @@ namespace TortillasReader
             {
                 foreach (Image image in ImagesCanvas.Children)
                 {
-                    image.Height = ImagesCanvas.ActualHeight;
-
-                    // Set images positions on the canvas.
-
-                    if (image.Name == "ImageRight")
+                    if (DoublePageMode)
                     {
+                        image.Height = ImagesCanvas.ActualHeight;
+
+                        double ratio = ImagesCanvas.ActualHeight * 100.0 / image.Source.Height / 100.0;
+                        double actualWidth = image.Source.Width * ratio;
+
+                        // Set images positions on the canvas.
                         Canvas.SetTop(image, 0);
-                        Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
+                        Canvas.SetLeft(image, (ImagesCanvas.ActualWidth - actualWidth) / 2);
                     }
-
-                    if (image.Name == "ImageLeft")
+                    else
                     {
-                        Canvas.SetTop(image, 0);
-                        Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
+                        image.Height = ImagesCanvas.ActualHeight;
+
+                        // Set images positions on the canvas.
+
+                        if (image.Name == "ImageRight")
+                        {
+                            Canvas.SetTop(image, 0);
+                            Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
+                        }
+
+                        if (image.Name == "ImageLeft")
+                        {
+                            Canvas.SetTop(image, 0);
+                            Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
+                        }
                     }
                 }
             }
@@ -427,35 +485,59 @@ namespace TortillasReader
         {
             if (Archive != null && CurrentPage < Archive.FileEntries.Count() - 2 && CurrentPage >= 0)
             {
-                // Get images sources.
-                ImageSource rightImage = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
-                ImageSource leftImage = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage + 1));
-
-                Image imageRight = new()
-                {
-                    Height = ImagesCanvas.ActualHeight,
-                    Name = "ImageRight",
-                    Source = rightImage
-                };
-
-                Image imageLeft = new()
-                {
-                    Height = ImagesCanvas.ActualHeight,
-                    Name = "ImageLeft",
-                    Source = leftImage
-                };
-
                 ImagesCanvas.Children.Clear();
 
-                ImagesCanvas.Children.Add(imageRight);
-                ImagesCanvas.Children.Add(imageLeft);
+                if (DoublePageMode)
+                {
+                    // Get image source.
+                    ImageSource rightImageSource = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
 
-                // Set images positions on the canvas.
-                Canvas.SetTop(imageRight, 0);
-                Canvas.SetLeft(imageRight, ImagesCanvas.ActualWidth / 2);
+                    Image imageRight = new()
+                    {
+                        Height = ImagesCanvas.ActualHeight,
+                        Name = "ImageRight",
+                        Source = rightImageSource
+                    };
 
-                Canvas.SetTop(imageLeft, 0);
-                Canvas.SetRight(imageLeft, ImagesCanvas.ActualWidth / 2);
+                    ImagesCanvas.Children.Add(imageRight);
+
+                    double ratio = ImagesCanvas.ActualHeight * 100.0 / rightImageSource.Height / 100.0;
+                    double actualWidth = rightImageSource.Width * ratio;
+
+                    // Set images positions on the canvas.
+                    Canvas.SetTop(imageRight, 0);
+                    Canvas.SetLeft(imageRight, (ImagesCanvas.ActualWidth - actualWidth) / 2);
+                }
+                else
+                {
+                    // Get images sources.
+                    ImageSource rightImageSource = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
+                    ImageSource leftImageSource = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage + 1));
+
+                    Image imageRight = new()
+                    {
+                        Height = ImagesCanvas.ActualHeight,
+                        Name = "ImageRight",
+                        Source = rightImageSource
+                    };
+
+                    Image imageLeft = new()
+                    {
+                        Height = ImagesCanvas.ActualHeight,
+                        Name = "ImageLeft",
+                        Source = leftImageSource
+                    };
+
+                    ImagesCanvas.Children.Add(imageRight);
+                    ImagesCanvas.Children.Add(imageLeft);
+
+                    // Set images positions on the canvas.
+                    Canvas.SetTop(imageRight, 0);
+                    Canvas.SetLeft(imageRight, ImagesCanvas.ActualWidth / 2);
+
+                    Canvas.SetTop(imageLeft, 0);
+                    Canvas.SetRight(imageLeft, ImagesCanvas.ActualWidth / 2);
+                }
 
                 // Reset zoom
                 ScaleTransform scaleTransform = new(1, 1);
