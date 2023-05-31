@@ -650,12 +650,10 @@ namespace TortillasReader
         /// <exception cref="Exception">Format is unknow.</exception>
         public static IArchive GetArchive(string filePath)
         {
-            var file = new FileInfo(filePath);
-
             // Needed for IBM437 error.
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            return file.Extension switch
+            return FileTypeDetector.GetFileType(filePath) switch
             {
                 ".cbr" => new RarArchive(filePath),
                 ".cbz" => new Archive(filePath),
