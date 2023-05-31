@@ -29,5 +29,10 @@
         /// Define if the double page mode was enable or not.
         /// </summary>
         public bool DoublePageMode { get; set; }
+
+        /// <summary>
+        /// Define if the comic mode is enabled or not.
+        /// </summary>
+        public bool ComicMode { get; set; }
     }
 }

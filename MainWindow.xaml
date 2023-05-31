@@ -21,6 +21,7 @@
                     </MenuItem>
                     <MenuItem Header="Mode écran sombre" Click="DimmedMode_Click"/>
                     <MenuItem Header="Mode double pages" IsCheckable="True" Click="ToggleDoublePageMode" x:Name="DoublePageModeMenu"/>
+                    <MenuItem Header="Mode comic" IsCheckable="True" Click="ToggleComicMode" x:Name="ComicModeMenu"/>
                     <Separator />
                     <MenuItem Header="Quitter" Click="Exit_Click"/>
                 </MenuItem>
@@ -31,7 +32,7 @@
             </Menu>
         </DockPanel>
         <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,0,0" Panel.ZIndex="200"/>
-        <Canvas x:Name="ImagesCanvas" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp" MouseMove="MouseMoveHandler">
+        <Canvas x:Name="ImagesCanvas" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp" MouseMove="MouseMoveHandler" Margin="0,18,0,0">
         </Canvas>
     </Grid>
 </Window>

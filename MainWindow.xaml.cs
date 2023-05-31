@@ -61,6 +61,11 @@ namespace TortillasReader
         /// </summary>
         public bool DoublePageMode { get; set; }
 
+        /// <summary>
+        /// Enable comic mode (when reading american comics).
+        /// </summary>
+        public bool ComicMode { get; set; }
+
         #region Borders
 
         /// <summary>
@@ -145,6 +150,7 @@ namespace TortillasReader
             if (openFileDialog.ShowDialog() == true)
             {
                 LoadBook(openFileDialog.FileName);
+                SetPage();
             }
         }
 
@@ -210,6 +216,18 @@ namespace TortillasReader
         {
             var menu = (MenuItem)sender;
             SetDoublePageMode(menu.IsChecked);
+            SetPage();
+        }
+
+        /// <summary>
+        /// Swotch from the manga to comic mode.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ToggleComicMode(object sender, RoutedEventArgs e)
+        {
+            var menu = (MenuItem)sender;
+            SetComicMode(menu.IsChecked);
             SetPage();
         }
 
@@ -306,7 +324,8 @@ namespace TortillasReader
                 LastBook = CurrentFile ?? string.Empty,
                 ScrollSpeed = ScrollSpeed,
                 ScreenOpacity = this.Opacity,
-                DoublePageMode = DoublePageMode
+                DoublePageMode = DoublePageMode,
+                ComicMode = ComicMode
             });
         }
 
@@ -324,6 +343,7 @@ namespace TortillasReader
                 SetScrollSpeed(read.ScrollSpeed);
                 this.Opacity = read.ScreenOpacity;
                 SetDoublePageMode(read.DoublePageMode);
+                SetComicMode(read.ComicMode);
 
                 SetPage();
             }
@@ -338,29 +358,66 @@ namespace TortillasReader
         {
             if (Archive != null)
             {
-                if (e.Key == Key.Left && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
+                if (ComicMode)
+                {
+                    if (e.Key == Key.Left)
+                    {
+                        SetPreviousPage();
+                    }
+
+                    if (e.Key == Key.Right)
+                    {
+                        SetNextPage();
+                    }
+                }
+                else
+                {
+                    if (e.Key == Key.Left)
+                    {
+                        SetNextPage();
+                    }
+
+                    if (e.Key == Key.Right)
+                    {
+                        SetPreviousPage();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set the next page.
+        /// </summary>
+        private void SetNextPage()
+        {
+            if (CurrentPage + 1 < Archive.FileEntries.Count() - 2)
+            {
+                CurrentPage++;
+
+                if ((int)ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
                 {
                     CurrentPage++;
-
-                    if ((int)ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
-                    {
-                        CurrentPage++;
-                    }
-
-                    SetPage();
                 }
 
-                if (e.Key == Key.Right && CurrentPage - 1 >= 0)
+                SetPage();
+            }
+        }
+
+        /// <summary>
+        /// Set the previous page.
+        /// </summary>
+        private void SetPreviousPage()
+        {
+            if (CurrentPage - 1 >= 0)
+            {
+                CurrentPage--;
+
+                if ((int)ScrollSpeed == 2 && CurrentPage - 1 >= 0)
                 {
                     CurrentPage--;
-
-                    if ((int)ScrollSpeed == 2 && CurrentPage - 1 >= 0)
-                    {
-                        CurrentPage--;
-                    }
-
-                    SetPage();
                 }
+
+                SetPage();
             }
         }
 
@@ -411,20 +468,37 @@ namespace TortillasReader
         }
 
         /// <summary>
+        /// Set the comic mode.
+        /// </summary>
+        /// <param name="comicMode">Enabled or disabled.</param>
+        private void SetComicMode(bool comicMode)
+        {
+            ComicModeMenu.IsChecked = comicMode;
+            ComicMode = comicMode;
+        }
+
+        /// <summary>
         /// Handle windows resizing.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            double imagesWidth = ImagesCanvas.Children.Cast<Image>().Sum(i => i.ActualWidth);
+
+            if (this.ActualWidth < imagesWidth)
+            {
+                this.Width = imagesWidth;
+            }
+
             if (ImagesCanvas.ActualWidth != 0)
             {
                 foreach (Image image in ImagesCanvas.Children)
                 {
+                    image.Height = ImagesCanvas.ActualHeight;
+
                     if (DoublePageMode)
                     {
-                        image.Height = ImagesCanvas.ActualHeight;
-
                         double ratio = ImagesCanvas.ActualHeight * 100.0 / image.Source.Height / 100.0;
                         double actualWidth = image.Source.Width * ratio;
 
@@ -434,20 +508,35 @@ namespace TortillasReader
                     }
                     else
                     {
-                        image.Height = ImagesCanvas.ActualHeight;
-
-                        // Set images positions on the canvas.
-
-                        if (image.Name == "ImageRight")
+                        if (ComicMode)
                         {
-                            Canvas.SetTop(image, 0);
-                            Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
+                            // Set images positions on the canvas.
+                            if (image.Name == "ImageLeft")
+                            {
+                                Canvas.SetTop(image, 0);
+                                Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
+                            }
+
+                            if (image.Name == "ImageRight")
+                            {
+                                Canvas.SetTop(image, 0);
+                                Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
+                            }
                         }
-
-                        if (image.Name == "ImageLeft")
+                        else
                         {
-                            Canvas.SetTop(image, 0);
-                            Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
+                            // Set images positions on the canvas.
+                            if (image.Name == "ImageRight")
+                            {
+                                Canvas.SetTop(image, 0);
+                                Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
+                            }
+
+                            if (image.Name == "ImageLeft")
+                            {
+                                Canvas.SetTop(image, 0);
+                                Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
+                            }
                         }
                     }
                 }
@@ -466,9 +555,6 @@ namespace TortillasReader
             if (File.Exists(CurrentFile))
             {
                 Archive = GetArchive(CurrentFile);
-
-                SetPage();
-
                 MainWindowElement.Title = "Tortillas reader - " + Path.GetFileName(fileName);
             }
             else
@@ -530,12 +616,24 @@ namespace TortillasReader
                     ImagesCanvas.Children.Add(imageRight);
                     ImagesCanvas.Children.Add(imageLeft);
 
-                    // Set images positions on the canvas.
-                    Canvas.SetTop(imageRight, 0);
-                    Canvas.SetLeft(imageRight, ImagesCanvas.ActualWidth / 2);
+                    if (ComicMode)
+                    {
+                        // Set images positions on the canvas.
+                        Canvas.SetTop(imageLeft, 0);
+                        Canvas.SetLeft(imageLeft, ImagesCanvas.ActualWidth / 2);
 
-                    Canvas.SetTop(imageLeft, 0);
-                    Canvas.SetRight(imageLeft, ImagesCanvas.ActualWidth / 2);
+                        Canvas.SetTop(imageRight, 0);
+                        Canvas.SetRight(imageRight, ImagesCanvas.ActualWidth / 2);
+                    }
+                    else
+                    {
+                        // Set images positions on the canvas.
+                        Canvas.SetTop(imageRight, 0);
+                        Canvas.SetLeft(imageRight, ImagesCanvas.ActualWidth / 2);
+
+                        Canvas.SetTop(imageLeft, 0);
+                        Canvas.SetRight(imageLeft, ImagesCanvas.ActualWidth / 2);
+                    }
                 }
 
                 // Reset zoom
