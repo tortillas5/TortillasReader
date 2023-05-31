@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Aspose.Zip;
 using Aspose.Zip.Rar;
@@ -246,7 +247,8 @@ namespace TortillasReader
                 "Aller à la page : Se déplacer à la page sélectionnée\n" +
                 "Vitesse de défilement des pages : Déplacer les pages par 1 ou 2 à la fois\n" +
                 "Mode écran sombre : Assombrit l'écran pour le confort des yeux\n" +
-                "Mode double pages : N'affiche qu'une image à la fois pour gérer les comics avec des doubles pages\n"
+                "Mode double pages : N'affiche qu'une image à la fois pour gérer les comics avec des doubles pages\n" +
+                "Mode comic : Change le sens de lecture pour passer du mode manga au mode comic"
                 , "Liste des commandes");
         }
 
@@ -399,7 +401,22 @@ namespace TortillasReader
                     CurrentPage++;
                 }
 
-                SetPage();
+                foreach (Image image in ImagesCanvas.Children)
+                {
+                    // Create animation
+                    DoubleAnimation animation = new DoubleAnimation();
+
+                    // Configure the animation
+                    animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
+                    animation.To = ComicMode ? -1000 : this.ActualWidth;
+                    animation.Duration = TimeSpan.FromSeconds(0.2);
+
+                    // Register the completed event for the animations
+                    animation.Completed += SetPage;
+
+                    // Start the animations
+                    image.BeginAnimation(Canvas.LeftProperty, animation);
+                }
             }
         }
 
@@ -417,7 +434,22 @@ namespace TortillasReader
                     CurrentPage--;
                 }
 
-                SetPage();
+                foreach (Image image in ImagesCanvas.Children)
+                {
+                    // Create animation
+                    DoubleAnimation animation = new DoubleAnimation();
+
+                    // Configure the animation
+                    animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
+                    animation.To = ComicMode ? this.ActualWidth : -1000;
+                    animation.Duration = TimeSpan.FromSeconds(0.2);
+
+                    // Register the completed event for the animations
+                    animation.Completed += SetPage;
+
+                    // Start the animations
+                    image.BeginAnimation(Canvas.LeftProperty, animation);
+                }
             }
         }
 
@@ -561,6 +593,14 @@ namespace TortillasReader
             {
                 MessageBox.Show("Le fichier qui était en cours de lecture est introuvable :\n" + fileName);
             }
+        }
+
+        /// <summary>
+        /// Set the images for the current page given.
+        /// </summary>
+        private void SetPage(object sender, EventArgs e)
+        {
+            SetPage();
         }
 
         /// <summary>
