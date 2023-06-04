@@ -34,5 +34,10 @@
         /// Define if the comic mode is enabled or not.
         /// </summary>
         public bool ComicMode { get; set; }
+
+        /// <summary>
+        /// Define if the animations are enabled or not.
+        /// </summary>
+        public bool DisableAnimations { get; set; }
     }
 }

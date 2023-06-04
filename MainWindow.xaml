@@ -22,6 +22,7 @@
                     <MenuItem Header="Mode écran sombre" Click="DimmedMode_Click"/>
                     <MenuItem Header="Mode double pages" IsCheckable="True" Click="ToggleDoublePageMode" x:Name="DoublePageModeMenu"/>
                     <MenuItem Header="Mode comic" IsCheckable="True" Click="ToggleComicMode" x:Name="ComicModeMenu"/>
+                    <MenuItem Header="Désactiver les animations" IsCheckable="True" Click="ToggleAnimations" x:Name="AnimationsMenu"/>
                     <Separator />
                     <MenuItem Header="Quitter" Click="Exit_Click"/>
                 </MenuItem>

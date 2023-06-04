@@ -67,6 +67,11 @@ namespace TortillasReader
         /// </summary>
         public bool ComicMode { get; set; }
 
+        /// <summary>
+        /// Enable animations.
+        /// </summary>
+        public bool DisableAnimations { get; set; }
+
         #region Borders
 
         /// <summary>
@@ -221,7 +226,7 @@ namespace TortillasReader
         }
 
         /// <summary>
-        /// Swotch from the manga to comic mode.
+        /// Switch from the manga to comic mode.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -230,6 +235,17 @@ namespace TortillasReader
             var menu = (MenuItem)sender;
             SetComicMode(menu.IsChecked);
             SetPage();
+        }
+
+        /// <summary>
+        /// Enable or disable the animations.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ToggleAnimations(object sender, RoutedEventArgs e)
+        {
+            var menu = (MenuItem)sender;
+            SetAnimations(menu.IsChecked);
         }
 
         /// <summary>
@@ -327,7 +343,8 @@ namespace TortillasReader
                 ScrollSpeed = ScrollSpeed,
                 ScreenOpacity = this.Opacity,
                 DoublePageMode = DoublePageMode,
-                ComicMode = ComicMode
+                ComicMode = ComicMode,
+                DisableAnimations = DisableAnimations
             });
         }
 
@@ -346,6 +363,7 @@ namespace TortillasReader
                 this.Opacity = read.ScreenOpacity;
                 SetDoublePageMode(read.DoublePageMode);
                 SetComicMode(read.ComicMode);
+                SetAnimations(read.DisableAnimations);
 
                 SetPage();
             }
@@ -401,21 +419,28 @@ namespace TortillasReader
                     CurrentPage++;
                 }
 
-                foreach (Image image in ImagesCanvas.Children)
+                if (!DisableAnimations)
                 {
-                    // Create animation
-                    DoubleAnimation animation = new DoubleAnimation();
+                    foreach (Image image in ImagesCanvas.Children)
+                    {
+                        // Create animation
+                        DoubleAnimation animation = new DoubleAnimation();
 
-                    // Configure the animation
-                    animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
-                    animation.To = ComicMode ? -1000 : this.ActualWidth;
-                    animation.Duration = TimeSpan.FromSeconds(0.2);
+                        // Configure the animation
+                        animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
+                        animation.To = ComicMode ? -1000 : this.ActualWidth;
+                        animation.Duration = TimeSpan.FromSeconds(0.2);
 
-                    // Register the completed event for the animations
-                    animation.Completed += SetPage;
+                        // Register the completed event for the animations
+                        animation.Completed += SetPage;
 
-                    // Start the animations
-                    image.BeginAnimation(Canvas.LeftProperty, animation);
+                        // Start the animations
+                        image.BeginAnimation(Canvas.LeftProperty, animation);
+                    }
+                }
+                else
+                {
+                    SetPage();
                 }
             }
         }
@@ -434,21 +459,28 @@ namespace TortillasReader
                     CurrentPage--;
                 }
 
-                foreach (Image image in ImagesCanvas.Children)
+                if (!DisableAnimations)
                 {
-                    // Create animation
-                    DoubleAnimation animation = new DoubleAnimation();
+                    foreach (Image image in ImagesCanvas.Children)
+                    {
+                        // Create animation
+                        DoubleAnimation animation = new DoubleAnimation();
 
-                    // Configure the animation
-                    animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
-                    animation.To = ComicMode ? this.ActualWidth : -1000;
-                    animation.Duration = TimeSpan.FromSeconds(0.2);
+                        // Configure the animation
+                        animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
+                        animation.To = ComicMode ? this.ActualWidth : -1000;
+                        animation.Duration = TimeSpan.FromSeconds(0.2);
 
-                    // Register the completed event for the animations
-                    animation.Completed += SetPage;
+                        // Register the completed event for the animations
+                        animation.Completed += SetPage;
 
-                    // Start the animations
-                    image.BeginAnimation(Canvas.LeftProperty, animation);
+                        // Start the animations
+                        image.BeginAnimation(Canvas.LeftProperty, animation);
+                    }
+                }
+                else
+                {
+                    SetPage();
                 }
             }
         }
@@ -507,6 +539,16 @@ namespace TortillasReader
         {
             ComicModeMenu.IsChecked = comicMode;
             ComicMode = comicMode;
+        }
+
+        /// <summary>
+        /// Set the animations.
+        /// </summary>
+        /// <param name="animations">Enabled or disabled.</param>
+        private void SetAnimations(bool animations)
+        {
+            AnimationsMenu.IsChecked = animations;
+            DisableAnimations = animations;
         }
 
         /// <summary>
