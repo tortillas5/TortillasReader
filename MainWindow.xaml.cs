@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -71,6 +72,19 @@ namespace TortillasReader
         /// Enable animations.
         /// </summary>
         public bool DisableAnimations { get; set; }
+
+        /// <summary>
+        /// Set the app language.
+        /// </summary>
+        public Languages Language { get; set; }
+
+        #region Consts
+
+        private const string IMAGE_LEFT = "ImageLeft";
+
+        private const string IMAGE_RIGHT = "ImageRight";
+
+        #endregion Consts
 
         #region Borders
 
@@ -150,7 +164,7 @@ namespace TortillasReader
         {
             OpenFileDialog openFileDialog = new()
             {
-                Filter = "Archives de bandes dessinées|*.cbr;*.cbz;*.cbt;*.cb7"
+                Filter = Properties.Resources.ComicsArchives + "|*.cbr;*.cbz;*.cbt;*.cb7"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -255,17 +269,7 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void CommandList_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "Flèches de gauche / droite : Changer de page\n" +
-                "Double cliquer : Zoom sur la souris\n" +
-                "Cliquer et déplacer pendant le zoom : Se déplacer sur l'image\n" +
-                "Charger un fichier : Charge un livre\n" +
-                "Aller à la page : Se déplacer à la page sélectionnée\n" +
-                "Vitesse de défilement des pages : Déplacer les pages par 1 ou 2 à la fois\n" +
-                "Mode écran sombre : Assombrit l'écran pour le confort des yeux\n" +
-                "Mode double pages : N'affiche qu'une image à la fois pour gérer les comics avec des doubles pages\n" +
-                "Mode comic : Change le sens de lecture pour passer du mode manga au mode comic"
-                , "Liste des commandes");
+            MessageBox.Show(Properties.Resources.CommandsListFull, Properties.Resources.CommandsList);
         }
 
         /// <summary>
@@ -275,7 +279,7 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Créé par Tortillas - 2023\nurl : https://github.com/tortillas5/TortillasReader", "A propos");
+            MessageBox.Show(Properties.Resources.WhoMadeThis, Properties.Resources.About);
         }
 
         /// <summary>
@@ -288,6 +292,30 @@ namespace TortillasReader
             this.Close();
         }
 
+        /// <summary>
+        /// Change the language of the app.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="Exception"></exception>
+        private void ChangeLanguage_Click(Object sender, RoutedEventArgs e)
+        {
+            MenuItem item = (MenuItem)sender;
+
+            Language = item.Uid switch
+            {
+                "French" => Languages.French,
+                "English" => Languages.English,
+                _ => throw new Exception(Properties.Resources.UnknownLangugage),
+            };
+
+            // Saves the datas, then reload a window with new language.
+            OnClosing(new CancelEventArgs());
+            MainWindow newMainWindow = new MainWindow();
+            newMainWindow.Show();
+            this.Close();
+        }
+
         #endregion Menus
 
         /// <summary>
@@ -295,6 +323,8 @@ namespace TortillasReader
         /// </summary>
         public MainWindow()
         {
+            ResumeLanguage();
+
             DataContext = this;
             InitializeComponent();
 
@@ -344,7 +374,8 @@ namespace TortillasReader
                 ScreenOpacity = this.Opacity,
                 DoublePageMode = DoublePageMode,
                 ComicMode = ComicMode,
-                DisableAnimations = DisableAnimations
+                DisableAnimations = DisableAnimations,
+                Language = Language
             });
         }
 
@@ -366,6 +397,32 @@ namespace TortillasReader
                 SetAnimations(read.DisableAnimations);
 
                 SetPage();
+            }
+        }
+
+        /// <summary>
+        /// Reload the last language
+        /// </summary>
+        private void ResumeLanguage()
+        {
+            var read = JsonHandler.GetEntities<ResumeReading>().FirstOrDefault();
+
+            if (read != null && read.Language != null)
+            {
+                Language = read.Language;
+
+                System.Threading.Thread.CurrentThread.CurrentUICulture = Language switch
+                {
+                    Languages.French => new CultureInfo("fr-FR"),
+                    Languages.English => new CultureInfo("en-US"),
+                    _ => throw new Exception(Properties.Resources.UnknownLangugage),
+                };
+            }
+            else
+            {
+                // Default in english.
+                Language = Languages.English;
+                System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
             }
         }
 
@@ -585,13 +642,13 @@ namespace TortillasReader
                         if (ComicMode)
                         {
                             // Set images positions on the canvas.
-                            if (image.Name == "ImageLeft")
+                            if (image.Name == IMAGE_LEFT)
                             {
                                 Canvas.SetTop(image, 0);
                                 Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
                             }
 
-                            if (image.Name == "ImageRight")
+                            if (image.Name == IMAGE_RIGHT)
                             {
                                 Canvas.SetTop(image, 0);
                                 Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
@@ -600,13 +657,13 @@ namespace TortillasReader
                         else
                         {
                             // Set images positions on the canvas.
-                            if (image.Name == "ImageRight")
+                            if (image.Name == IMAGE_RIGHT)
                             {
                                 Canvas.SetTop(image, 0);
                                 Canvas.SetLeft(image, ImagesCanvas.ActualWidth / 2);
                             }
 
-                            if (image.Name == "ImageLeft")
+                            if (image.Name == IMAGE_LEFT)
                             {
                                 Canvas.SetTop(image, 0);
                                 Canvas.SetRight(image, ImagesCanvas.ActualWidth / 2);
@@ -633,7 +690,7 @@ namespace TortillasReader
             }
             else
             {
-                MessageBox.Show("Le fichier qui était en cours de lecture est introuvable :\n" + fileName);
+                MessageBox.Show(Properties.Resources.FileNotFound + fileName);
             }
         }
 
@@ -662,7 +719,7 @@ namespace TortillasReader
                     Image imageRight = new()
                     {
                         Height = ImagesCanvas.ActualHeight,
-                        Name = "ImageRight",
+                        Name = IMAGE_RIGHT,
                         Source = rightImageSource
                     };
 
@@ -684,14 +741,14 @@ namespace TortillasReader
                     Image imageRight = new()
                     {
                         Height = ImagesCanvas.ActualHeight,
-                        Name = "ImageRight",
+                        Name = IMAGE_RIGHT,
                         Source = rightImageSource
                     };
 
                     Image imageLeft = new()
                     {
                         Height = ImagesCanvas.ActualHeight,
-                        Name = "ImageLeft",
+                        Name = IMAGE_LEFT,
                         Source = leftImageSource
                     };
 
@@ -839,7 +896,7 @@ namespace TortillasReader
                 ".cbz" => new Archive(filePath),
                 ".cbt" => new TarArchive(filePath),
                 ".cb7" => new SevenZipArchive(filePath),
-                _ => throw new Exception("Format du fichier non géré."),
+                _ => throw new Exception(Properties.Resources.UnsupportedFileFormat),
             };
         }
     }

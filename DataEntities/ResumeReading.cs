@@ -39,5 +39,10 @@
         /// Define if the animations are enabled or not.
         /// </summary>
         public bool DisableAnimations { get; set; }
+
+        /// <summary>
+        /// Define the language of the app.
+        /// </summary>
+        public Languages Language { get; set; }
     }
 }

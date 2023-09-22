@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TortillasReader"
+        xmlns:local="clr-namespace:TortillasReader.Properties"
         mc:Ignorable="d"
         Title="Tortillas reader" Height="450" Width="800"
         x:Name="MainWindowElement"
@@ -12,23 +12,27 @@
     <Grid>
         <DockPanel VerticalAlignment="Top" Height="18" Panel.ZIndex="200">
             <Menu DockPanel.Dock="Top">
-                <MenuItem IsTabStop="False" Header="Réglages">
-                    <MenuItem Header="Charger un fichier" Click="LoadFile_Click"/>
-                    <MenuItem Header="Aller à la page" Click="GoToPage_Click"/>
-                    <MenuItem Header="Vitesse de défilement des pages">
+                <MenuItem IsTabStop="False" Header="{x:Static local:Resources.Settings}">
+                    <MenuItem Header="{x:Static local:Resources.LoadFile}" Click="LoadFile_Click"/>
+                    <MenuItem Header="{x:Static local:Resources.GoToPage}" Click="GoToPage_Click"/>
+                    <MenuItem Header="{x:Static local:Resources.PageScrollingSpeed}">
                         <MenuItem Header="1" IsCheckable="True" Click="ChangeScrollSpeed" x:Name="ScrollSpeed1"/>
                         <MenuItem Header="2" IsCheckable="True" Click="ChangeScrollSpeed" x:Name="ScrollSpeed2"/>
                     </MenuItem>
-                    <MenuItem Header="Mode écran sombre" Click="DimmedMode_Click"/>
-                    <MenuItem Header="Mode double pages" IsCheckable="True" Click="ToggleDoublePageMode" x:Name="DoublePageModeMenu"/>
-                    <MenuItem Header="Mode comic" IsCheckable="True" Click="ToggleComicMode" x:Name="ComicModeMenu"/>
-                    <MenuItem Header="Désactiver les animations" IsCheckable="True" Click="ToggleAnimations" x:Name="AnimationsMenu"/>
+                    <MenuItem Header="{x:Static local:Resources.DarkScreenMode}" Click="DimmedMode_Click"/>
+                    <MenuItem Header="{x:Static local:Resources.DoublePageMode}" IsCheckable="True" Click="ToggleDoublePageMode" x:Name="DoublePageModeMenu"/>
+                    <MenuItem Header="{x:Static local:Resources.ComicMode}" IsCheckable="True" Click="ToggleComicMode" x:Name="ComicModeMenu"/>
+                    <MenuItem Header="{x:Static local:Resources.DisableAnimations}" IsCheckable="True" Click="ToggleAnimations" x:Name="AnimationsMenu"/>
                     <Separator />
-                    <MenuItem Header="Quitter" Click="Exit_Click"/>
+                    <MenuItem Header="{x:Static local:Resources.Leave}" Click="Exit_Click"/>
                 </MenuItem>
-                <MenuItem IsTabStop="False" Header="Infos">
-                    <MenuItem Header="Liste des commandes" Click="CommandList_Click"/>
-                    <MenuItem Header="A propos" Click="About_Click"/>
+                <MenuItem IsTabStop="False" Header="{x:Static local:Resources.Languages}">
+                    <MenuItem Uid="French" Header="Français" Click="ChangeLanguage_Click"/>
+                    <MenuItem Uid="English" Header="English" Click="ChangeLanguage_Click"/>
+                </MenuItem>
+                <MenuItem IsTabStop="False" Header="{x:Static local:Resources.Infos}">
+                    <MenuItem Header="{x:Static local:Resources.CommandsList}" Click="CommandList_Click"/>
+                    <MenuItem Header="{x:Static local:Resources.About}" Click="About_Click"/>
                 </MenuItem>
             </Menu>
         </DockPanel>
