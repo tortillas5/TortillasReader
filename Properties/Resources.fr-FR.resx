@@ -177,6 +177,9 @@ Mode comic : Change le sens de lecture pour passer du mode manga au mode comic</
   <data name="LoadFile" xml:space="preserve">
     <value>Charger un fichier</value>
   </data>
+  <data name="Pages" xml:space="preserve">
+    <value>Pages</value>
+  </data>
   <data name="PageScrollingSpeed" xml:space="preserve">
     <value>Vitesse de défilement des pages</value>
   </data>

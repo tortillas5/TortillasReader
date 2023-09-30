@@ -223,6 +223,15 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Pages.
+        /// </summary>
+        public static string Pages {
+            get {
+                return ResourceManager.GetString("Pages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Vitesse de défilement des pages.
         /// </summary>
         public static string PageScrollingSpeed {

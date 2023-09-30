@@ -177,6 +177,9 @@ Comic mode: Changes the reading direction to go from manga mode to comic mode</v
   <data name="LoadFile" xml:space="preserve">
     <value>Load a file</value>
   </data>
+  <data name="Pages" xml:space="preserve">
+    <value>Pages</value>
+  </data>
   <data name="PageScrollingSpeed" xml:space="preserve">
     <value>Page scrolling speed</value>
   </data>
