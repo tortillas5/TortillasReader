@@ -149,8 +149,14 @@ Mode écran sombre : Assombrit l'écran pour le confort des yeux
 Mode double pages : N'affiche qu'une image à la fois pour gérer les comics avec des doubles pages
 Mode comic : Change le sens de lecture pour passer du mode manga au mode comic</value>
   </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Sombre</value>
+  </data>
   <data name="DarkScreenMode" xml:space="preserve">
     <value>Mode écran sombre</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Défaut</value>
   </data>
   <data name="DisableAnimations" xml:space="preserve">
     <value>Désactiver les animations</value>
@@ -186,11 +192,17 @@ Mode comic : Change le sens de lecture pour passer du mode manga au mode comic</
   <data name="Settings" xml:space="preserve">
     <value>Réglages</value>
   </data>
+  <data name="Themes" xml:space="preserve">
+    <value>Thèmes</value>
+  </data>
   <data name="TortillasReader" xml:space="preserve">
     <value>Tortillas reader -</value>
   </data>
   <data name="UnknownLangugage" xml:space="preserve">
     <value>Langue inconnue.</value>
+  </data>
+  <data name="UnknownTheme" xml:space="preserve">
+    <value>Thème sélectionné inconnu.</value>
   </data>
   <data name="UnsupportedFileFormat" xml:space="preserve">
     <value>Format du fichier non géré.</value>

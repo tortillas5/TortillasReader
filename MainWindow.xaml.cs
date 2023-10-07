@@ -78,11 +78,34 @@ namespace TortillasReader
         /// </summary>
         public Languages Language { get; set; }
 
+        /// <summary>
+        /// Background color of the app.
+        /// </summary>
+        public Brush BackgroundColor { get; set; }
+
+        /// <summary>
+        /// Define the color of the font used to display the pages number.
+        /// </summary>
+        public Brush PageFontColor { get; set; }
+
         #region Consts
 
         private const string IMAGE_LEFT = "ImageLeft";
 
         private const string IMAGE_RIGHT = "ImageRight";
+
+        private const string CULTURE_FR = "fr-FR";
+
+        private const string CULTURE_EN = "en-US";
+
+        private const string UID_THEME_WHITE = "White";
+
+        private const string UID_THEME_BLACK = "Black";
+
+        private const string UID_FRENCH = "French";
+
+        private const string UID_ENGLISH = "English";
+
 
         #endregion Consts
 
@@ -304,8 +327,8 @@ namespace TortillasReader
 
             Language = item.Uid switch
             {
-                "French" => Languages.French,
-                "English" => Languages.English,
+                UID_FRENCH => Languages.French,
+                UID_ENGLISH => Languages.English,
                 _ => throw new Exception(Properties.Resources.UnknownLangugage),
             };
 
@@ -316,6 +339,35 @@ namespace TortillasReader
             this.Close();
         }
 
+        /// <summary>
+        /// Change the theme of the app.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeTheme_Click(Object sender, RoutedEventArgs e)
+        {
+            MenuItem item = (MenuItem)sender;
+
+            Brush backgroundBrush;
+            Brush fontBrush;
+
+            switch (item.Uid)
+            {
+                case UID_THEME_WHITE:
+                    backgroundBrush = Brushes.White;
+                    fontBrush = Brushes.Black;
+                    break;
+                case UID_THEME_BLACK:
+                    backgroundBrush = Brushes.Black;
+                    fontBrush = Brushes.White;
+                    break;
+                default:
+                    throw new Exception(Properties.Resources.UnknownTheme);
+            }
+
+            SetAppTheme(backgroundBrush, fontBrush);
+        }
+
         #endregion Menus
 
         /// <summary>
@@ -323,6 +375,7 @@ namespace TortillasReader
         /// </summary>
         public MainWindow()
         {
+            // Must be done before InitializeComponent.
             ResumeLanguage();
 
             DataContext = this;
@@ -375,7 +428,9 @@ namespace TortillasReader
                 DoublePageMode = DoublePageMode,
                 ComicMode = ComicMode,
                 DisableAnimations = DisableAnimations,
-                Language = Language
+                Language = Language,
+                BackgroundColor = BackgroundColor,
+                PageFontColor = PageFontColor,
             });
         }
 
@@ -386,16 +441,20 @@ namespace TortillasReader
         {
             var read = JsonHandler.GetEntities<ResumeReading>().FirstOrDefault();
 
-            if (read != null && !string.IsNullOrWhiteSpace(read.LastBook))
+            if (read != null)
             {
-                LoadBook(read.LastBook);
-                CurrentPage = read.CurrentPage;
+                if (!string.IsNullOrWhiteSpace(read.LastBook))
+                {
+                    LoadBook(read.LastBook);
+                    CurrentPage = read.CurrentPage;
+                }
+
                 SetScrollSpeed(read.ScrollSpeed);
                 this.Opacity = read.ScreenOpacity;
                 SetDoublePageMode(read.DoublePageMode);
                 SetComicMode(read.ComicMode);
                 SetAnimations(read.DisableAnimations);
-
+                SetAppTheme(read.BackgroundColor, read.PageFontColor);
                 SetPage();
             }
         }
@@ -413,8 +472,8 @@ namespace TortillasReader
 
                 System.Threading.Thread.CurrentThread.CurrentUICulture = Language switch
                 {
-                    Languages.French => new CultureInfo("fr-FR"),
-                    Languages.English => new CultureInfo("en-US"),
+                    Languages.French => new CultureInfo(CULTURE_FR),
+                    Languages.English => new CultureInfo(CULTURE_EN),
                     _ => throw new Exception(Properties.Resources.UnknownLangugage),
                 };
             }
@@ -422,7 +481,7 @@ namespace TortillasReader
             {
                 // Default in english.
                 Language = Languages.English;
-                System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+                System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(CULTURE_EN);
             }
         }
 
@@ -606,6 +665,20 @@ namespace TortillasReader
         {
             AnimationsMenu.IsChecked = animations;
             DisableAnimations = animations;
+        }
+
+        /// <summary>
+        /// Set the background and font colors of the app.
+        /// </summary>
+        /// <param name="selectedColor">Color of the background of the app.</param>
+        /// <param name="pagesFontColor">Color of the font used in the app.</param>
+        private void SetAppTheme(Brush selectedColor, Brush pagesFontColor)
+        {
+            ImagesCanvas.Background = selectedColor;
+            PageNumber.Foreground = pagesFontColor;
+
+            BackgroundColor = selectedColor;
+            PageFontColor = pagesFontColor;
         }
 
         /// <summary>

@@ -149,8 +149,14 @@ Dark screen mode: Darkens the screen for eye comfort
 Double page mode: Displays only one image at a time to manage comics with double pages
 Comic mode: Changes the reading direction to go from manga mode to comic mode</value>
   </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
   <data name="DarkScreenMode" xml:space="preserve">
     <value>Dark screen mode</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
   </data>
   <data name="DisableAnimations" xml:space="preserve">
     <value>Disable animations</value>
@@ -186,11 +192,17 @@ Comic mode: Changes the reading direction to go from manga mode to comic mode</v
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="Themes" xml:space="preserve">
+    <value>Themes</value>
+  </data>
   <data name="TortillasReader" xml:space="preserve">
     <value>Tortillas reader -</value>
   </data>
   <data name="UnknownLangugage" xml:space="preserve">
     <value>Unknown language.</value>
+  </data>
+  <data name="UnknownTheme" xml:space="preserve">
+    <value>Unknown selected theme.</value>
   </data>
   <data name="UnsupportedFileFormat" xml:space="preserve">
     <value>Unsupported file format.</value>

@@ -118,85 +118,87 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="About" xml:space="preserve">
-    <value>A propos</value>
+    <value>About</value>
   </data>
   <data name="CannotAddAlreadyExistingFile" xml:space="preserve">
-    <value>Impossible d'ajouter un objet déjà présent.</value>
+    <value>CannotAddAlreadyExistingFile</value>
   </data>
   <data name="CannotDeleteNonExistingFile" xml:space="preserve">
-    <value>Impossible de supprimer un objet qui n'existe pas.</value>
+    <value>CannotDeleteNonExistingFile</value>
   </data>
   <data name="CannotUpdateNonExistingFile" xml:space="preserve">
-    <value>Impossible de mettre à jour un objet qui n'existe pas.</value>
+    <value>CannotUpdateNonExistingFile</value>
   </data>
   <data name="ComicMode" xml:space="preserve">
-    <value>Mode comic</value>
+    <value>ComicMode</value>
   </data>
   <data name="ComicsArchives" xml:space="preserve">
-    <value>Archives de bandes dessinées</value>
+    <value>ComicsArchives</value>
   </data>
   <data name="CommandsList" xml:space="preserve">
-    <value>Liste des commandes</value>
+    <value>CommandsList</value>
   </data>
   <data name="CommandsListFull" xml:space="preserve">
-    <value>Flèches de gauche / droite : Changer de page
-Double cliquer : Zoom sur la souris
-Cliquer et déplacer pendant le zoom : Se déplacer sur l'image
-Charger un fichier : Charge un livre
-Aller à la page : Se déplacer à la page sélectionnée
-Vitesse de défilement des pages : Déplacer les pages par 1 ou 2 à la fois
-Mode écran sombre : Assombrit l'écran pour le confort des yeux
-Mode double pages : N'affiche qu'une image à la fois pour gérer les comics avec des doubles pages
-Mode comic : Change le sens de lecture pour passer du mode manga au mode comic</value>
+    <value>CommandsListFull</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Dark</value>
   </data>
   <data name="DarkScreenMode" xml:space="preserve">
-    <value>Mode écran sombre</value>
+    <value>DarkScreenMode</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
   </data>
   <data name="DisableAnimations" xml:space="preserve">
-    <value>Désactiver les animations</value>
+    <value>DisableAnimations</value>
   </data>
   <data name="DoublePageMode" xml:space="preserve">
-    <value>Mode double pages</value>
+    <value>DoublePageMode</value>
   </data>
   <data name="FileNotFound" xml:space="preserve">
-    <value>Le fichier qui était en cours de lecture est introuvable :
-</value>
+    <value>FileNotFound</value>
   </data>
   <data name="GoToPage" xml:space="preserve">
-    <value>Aller à la page</value>
+    <value>GoToPage</value>
   </data>
   <data name="Infos" xml:space="preserve">
     <value>Infos</value>
   </data>
   <data name="Languages" xml:space="preserve">
-    <value>Langues</value>
+    <value>Languages</value>
   </data>
   <data name="Leave" xml:space="preserve">
-    <value>Quitter</value>
+    <value>Leave</value>
   </data>
   <data name="LoadFile" xml:space="preserve">
-    <value>Charger un fichier</value>
+    <value>LoadFile</value>
   </data>
   <data name="Pages" xml:space="preserve">
     <value>Pages</value>
   </data>
   <data name="PageScrollingSpeed" xml:space="preserve">
-    <value>Vitesse de défilement des pages</value>
+    <value>PageScrollingSpeed</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Réglages</value>
+    <value>Settings</value>
+  </data>
+  <data name="Themes" xml:space="preserve">
+    <value>Themes</value>
   </data>
   <data name="TortillasReader" xml:space="preserve">
-    <value>Tortillas reader -</value>
+    <value>TortillasReader</value>
   </data>
   <data name="UnknownLangugage" xml:space="preserve">
-    <value>Langue inconnue.</value>
+    <value>UnknownLangugage</value>
+  </data>
+  <data name="UnknownTheme" xml:space="preserve">
+    <value>UnknownTheme</value>
   </data>
   <data name="UnsupportedFileFormat" xml:space="preserve">
-    <value>Format du fichier non géré.</value>
+    <value>UnsupportedFileFormat</value>
   </data>
   <data name="WhoMadeThis" xml:space="preserve">
-    <value>Créé par Tortillas - 2023
-url : https://github.com/tortillas5/TortillasReader</value>
+    <value>WhoMadeThis</value>
   </data>
 </root>

@@ -61,7 +61,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à A propos.
+        ///   Recherche une chaîne localisée semblable à About.
         /// </summary>
         public static string About {
             get {
@@ -70,7 +70,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Impossible d&apos;ajouter un objet déjà présent..
+        ///   Recherche une chaîne localisée semblable à CannotAddAlreadyExistingFile.
         /// </summary>
         public static string CannotAddAlreadyExistingFile {
             get {
@@ -79,7 +79,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Impossible de supprimer un objet qui n&apos;existe pas..
+        ///   Recherche une chaîne localisée semblable à CannotDeleteNonExistingFile.
         /// </summary>
         public static string CannotDeleteNonExistingFile {
             get {
@@ -88,7 +88,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Impossible de mettre à jour un objet qui n&apos;existe pas..
+        ///   Recherche une chaîne localisée semblable à CannotUpdateNonExistingFile.
         /// </summary>
         public static string CannotUpdateNonExistingFile {
             get {
@@ -97,7 +97,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Mode comic.
+        ///   Recherche une chaîne localisée semblable à ComicMode.
         /// </summary>
         public static string ComicMode {
             get {
@@ -106,7 +106,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Archives de bandes dessinées.
+        ///   Recherche une chaîne localisée semblable à ComicsArchives.
         /// </summary>
         public static string ComicsArchives {
             get {
@@ -115,7 +115,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Liste des commandes.
+        ///   Recherche une chaîne localisée semblable à CommandsList.
         /// </summary>
         public static string CommandsList {
             get {
@@ -124,15 +124,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Flèches de gauche / droite : Changer de page
-        ///Double cliquer : Zoom sur la souris
-        ///Cliquer et déplacer pendant le zoom : Se déplacer sur l&apos;image
-        ///Charger un fichier : Charge un livre
-        ///Aller à la page : Se déplacer à la page sélectionnée
-        ///Vitesse de défilement des pages : Déplacer les pages par 1 ou 2 à la fois
-        ///Mode écran sombre : Assombrit l&apos;écran pour le confort des yeux
-        ///Mode double pages : N&apos;affiche qu&apos;une image à la fois pour gérer les comics avec des doubles pages
-        ///Mode comic : Change le sens de lectu [le reste de la chaîne a été tronqué]&quot;;.
+        ///   Recherche une chaîne localisée semblable à CommandsListFull.
         /// </summary>
         public static string CommandsListFull {
             get {
@@ -141,7 +133,16 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Mode écran sombre.
+        ///   Recherche une chaîne localisée semblable à Dark.
+        /// </summary>
+        public static string Dark {
+            get {
+                return ResourceManager.GetString("Dark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à DarkScreenMode.
         /// </summary>
         public static string DarkScreenMode {
             get {
@@ -150,7 +151,16 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Désactiver les animations.
+        ///   Recherche une chaîne localisée semblable à Default.
+        /// </summary>
+        public static string Default {
+            get {
+                return ResourceManager.GetString("Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à DisableAnimations.
         /// </summary>
         public static string DisableAnimations {
             get {
@@ -159,7 +169,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Mode double pages.
+        ///   Recherche une chaîne localisée semblable à DoublePageMode.
         /// </summary>
         public static string DoublePageMode {
             get {
@@ -168,8 +178,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Le fichier qui était en cours de lecture est introuvable :
-        ///.
+        ///   Recherche une chaîne localisée semblable à FileNotFound.
         /// </summary>
         public static string FileNotFound {
             get {
@@ -178,7 +187,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Aller à la page.
+        ///   Recherche une chaîne localisée semblable à GoToPage.
         /// </summary>
         public static string GoToPage {
             get {
@@ -196,7 +205,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Langues.
+        ///   Recherche une chaîne localisée semblable à Languages.
         /// </summary>
         public static string Languages {
             get {
@@ -205,7 +214,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Quitter.
+        ///   Recherche une chaîne localisée semblable à Leave.
         /// </summary>
         public static string Leave {
             get {
@@ -214,7 +223,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Charger un fichier.
+        ///   Recherche une chaîne localisée semblable à LoadFile.
         /// </summary>
         public static string LoadFile {
             get {
@@ -232,7 +241,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Vitesse de défilement des pages.
+        ///   Recherche une chaîne localisée semblable à PageScrollingSpeed.
         /// </summary>
         public static string PageScrollingSpeed {
             get {
@@ -241,7 +250,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Réglages.
+        ///   Recherche une chaîne localisée semblable à Settings.
         /// </summary>
         public static string Settings {
             get {
@@ -250,7 +259,16 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Tortillas reader -.
+        ///   Recherche une chaîne localisée semblable à Themes.
+        /// </summary>
+        public static string Themes {
+            get {
+                return ResourceManager.GetString("Themes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à TortillasReader.
         /// </summary>
         public static string TortillasReader {
             get {
@@ -259,7 +277,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Langue inconnue..
+        ///   Recherche une chaîne localisée semblable à UnknownLangugage.
         /// </summary>
         public static string UnknownLangugage {
             get {
@@ -268,7 +286,16 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Format du fichier non géré..
+        ///   Recherche une chaîne localisée semblable à UnknownTheme.
+        /// </summary>
+        public static string UnknownTheme {
+            get {
+                return ResourceManager.GetString("UnknownTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à UnsupportedFileFormat.
         /// </summary>
         public static string UnsupportedFileFormat {
             get {
@@ -277,8 +304,7 @@ namespace TortillasReader.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Créé par Tortillas - 2023
-        ///url : https://github.com/tortillas5/TortillasReader.
+        ///   Recherche une chaîne localisée semblable à WhoMadeThis.
         /// </summary>
         public static string WhoMadeThis {
             get {

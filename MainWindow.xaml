@@ -26,6 +26,10 @@
                     <Separator />
                     <MenuItem Header="{x:Static local:Resources.Leave}" Click="Exit_Click"/>
                 </MenuItem>
+                <MenuItem IsTabStop="False" Header="{x:Static local:Resources.Themes}">
+                    <MenuItem Uid="White" Header="{x:Static local:Resources.Default}" Click="ChangeTheme_Click"/>
+                    <MenuItem Uid="Black" Header="{x:Static local:Resources.Dark}" Click="ChangeTheme_Click"/>
+                </MenuItem>
                 <MenuItem IsTabStop="False" Header="{x:Static local:Resources.Languages}">
                     <MenuItem Uid="French" Header="Français" Click="ChangeLanguage_Click"/>
                     <MenuItem Uid="English" Header="English" Click="ChangeLanguage_Click"/>
@@ -37,7 +41,6 @@
             </Menu>
         </DockPanel>
         <Label x:Name="PageNumber" Content="{x:Static local:Resources.Pages}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,0,0" Panel.ZIndex="200"/>
-        <Canvas x:Name="ImagesCanvas" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp" MouseMove="MouseMoveHandler" Margin="0,18,0,0">
-        </Canvas>
+        <Canvas x:Name="ImagesCanvas" MouseDown="HandleMouseDown" MouseUp="HandleMouseUp" MouseMove="MouseMoveHandler" Margin="0,18,0,0"/>
     </Grid>
 </Window>

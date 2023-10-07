@@ -1,4 +1,6 @@
-﻿namespace TortillasReader
+﻿using System.Windows.Media;
+
+namespace TortillasReader
 {
     /// <summary>
     /// Class representing the last book read, to reopen the last page/book.
@@ -44,5 +46,16 @@
         /// Define the language of the app.
         /// </summary>
         public Languages Language { get; set; }
+
+        /// <summary>
+        /// Define the background color of the app.
+        /// </summary>
+        public Brush BackgroundColor { get; set; }
+
+        /// <summary>
+        /// Define the color of the font used to display the pages number.
+        /// </summary>
+        public Brush PageFontColor { get; set; }
+
     }
 }
