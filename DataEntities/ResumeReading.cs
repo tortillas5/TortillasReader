@@ -56,6 +56,5 @@ namespace TortillasReader
         /// Define the color of the font used to display the pages number.
         /// </summary>
         public Brush PageFontColor { get; set; }
-
     }
 }

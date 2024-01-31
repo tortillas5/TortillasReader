@@ -88,6 +88,16 @@ namespace TortillasReader
         /// </summary>
         public Brush PageFontColor { get; set; }
 
+        /// <summary>
+        /// Value indicating if the app is in full screen.
+        /// </summary>
+        public bool FullScreenEnabled { get; set; }
+
+        /// <summary>
+        /// Previous state of the window, used when switching from windowed to fullscreen and vice versa.
+        /// </summary>
+        public WindowState OldState { get; set; }
+
         #region Consts
 
         private const string IMAGE_LEFT = "ImageLeft";
@@ -105,7 +115,6 @@ namespace TortillasReader
         private const string UID_FRENCH = "French";
 
         private const string UID_ENGLISH = "English";
-
 
         #endregion Consts
 
@@ -357,10 +366,12 @@ namespace TortillasReader
                     backgroundBrush = Brushes.White;
                     fontBrush = Brushes.Black;
                     break;
+
                 case UID_THEME_BLACK:
                     backgroundBrush = Brushes.Black;
                     fontBrush = Brushes.White;
                     break;
+
                 default:
                     throw new Exception(Properties.Resources.UnknownTheme);
             }
@@ -492,6 +503,26 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key == Key.F11 && !FullScreenEnabled)
+            {
+                OldState = WindowState;
+                WindowState = WindowState.Maximized;
+                Visibility = Visibility.Collapsed;
+                WindowStyle = WindowStyle.None;
+                ResizeMode = ResizeMode.NoResize;
+                Visibility = Visibility.Visible;
+                Activate();
+
+                FullScreenEnabled = true;
+            }
+            else if (e.Key == Key.F11 && FullScreenEnabled)
+            {
+                WindowState = OldState;
+                WindowStyle = WindowStyle.SingleBorderWindow;
+                ResizeMode = ResizeMode.CanResize;
+                FullScreenEnabled = false;
+            }
+
             if (Archive != null)
             {
                 if (ComicMode)
