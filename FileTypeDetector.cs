@@ -2,7 +2,7 @@
 
 namespace TortillasReader
 {
-    public class FileTypeDetector
+    public static class FileTypeDetector
     {
         /// <summary>
         /// Reliably return the type of a file.
@@ -11,34 +11,32 @@ namespace TortillasReader
         /// <returns>Type of a file.</returns>
         public static string GetFileType(string filePath)
         {
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            byte[] buffer = new byte[8]; // Read the first 8 bytes
+
+            // Read the bytes into the buffer
+            int bytesRead = stream.Read(buffer, 0, 8);
+
+            // Check for file signatures
+            if (IsRar(buffer, bytesRead))
             {
-                byte[] buffer = new byte[8]; // Read the first 8 bytes
-
-                // Read the bytes into the buffer
-                int bytesRead = stream.Read(buffer, 0, 8);
-
-                // Check for file signatures
-                if (IsRar(buffer, bytesRead))
-                {
-                    return ".cbr";
-                }
-                else if (IsZip(buffer, bytesRead))
-                {
-                    return ".cbz";
-                }
-                else if (IsTar(buffer, bytesRead))
-                {
-                    return ".cbt";
-                }
-                else if (Is7z(buffer, bytesRead))
-                {
-                    return ".cb7";
-                }
-
-                // If no match is found, return unknown type
-                return "Unknown";
+                return ".cbr";
             }
+            else if (IsZip(buffer, bytesRead))
+            {
+                return ".cbz";
+            }
+            else if (IsTar(buffer, bytesRead))
+            {
+                return ".cbt";
+            }
+            else if (Is7z(buffer, bytesRead))
+            {
+                return ".cb7";
+            }
+
+            // If no match is found, return unknown type
+            return "Unknown";
         }
 
         /// <summary>

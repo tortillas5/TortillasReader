@@ -7,9 +7,12 @@ namespace TortillasReader
     /// </summary>
     public partial class ScreenOpacityWindow : Window
     {
-        public ScreenOpacityWindow(double opacity)
+        public MainWindow AppWindow { get; set; }
+
+        public ScreenOpacityWindow(MainWindow appWindow, double opacity)
         {
             InitializeComponent();
+            AppWindow = appWindow;
             OpacitySlider.Value = 1 - opacity;
         }
 
@@ -20,7 +23,7 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            MainWindow.AppWindow.Opacity = 1 - OpacitySlider.Value;
+            AppWindow.Opacity = 1 - OpacitySlider.Value;
         }
 
         /// <summary>

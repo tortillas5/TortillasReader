@@ -26,7 +26,7 @@ namespace TortillasReader
         /// <summary>
         /// Will be self instantiated so other classes can update the MainWindow values (like opacity).
         /// </summary>
-        public static MainWindow AppWindow;
+        private readonly MainWindow AppWindow;
 
         /// <summary>
         /// Full path to the book.
@@ -76,17 +76,17 @@ namespace TortillasReader
         /// <summary>
         /// Set the app language.
         /// </summary>
-        public Languages Language { get; set; }
+        public Languages? AppLanguage { get; set; }
 
         /// <summary>
         /// Background color of the app.
         /// </summary>
-        public Brush BackgroundColor { get; set; }
+        public Brush? BackgroundColor { get; set; }
 
         /// <summary>
         /// Define the color of the font used to display the pages number.
         /// </summary>
-        public Brush PageFontColor { get; set; }
+        public Brush? PageFontColor { get; set; }
 
         /// <summary>
         /// Value indicating if the app is in full screen.
@@ -98,7 +98,7 @@ namespace TortillasReader
         /// </summary>
         public WindowState OldState { get; set; }
 
-        #region Consts
+        #region Constants
 
         private const string IMAGE_LEFT = "ImageLeft";
 
@@ -116,17 +116,17 @@ namespace TortillasReader
 
         private const string UID_ENGLISH = "English";
 
-        #endregion Consts
+        #endregion Constants
 
         #region Borders
 
         /// <summary>
-        /// Zindex value of the right image.
+        /// Z-index value of the right image.
         /// </summary>
         private int borderRightZIndex;
 
         /// <summary>
-        /// Zindex value of the left image.
+        /// Z-index value of the left image.
         /// </summary>
         private int borderLeftZIndex;
 
@@ -157,15 +157,6 @@ namespace TortillasReader
         }
 
         #endregion Borders
-
-        #region Services
-
-        /// <summary>
-        /// Handler used to save datas to the disk.
-        /// </summary>
-        public JsonHandler JsonHandler { get; set; } = new JsonHandler();
-
-        #endregion Services
 
         #region Notifications
 
@@ -222,13 +213,10 @@ namespace TortillasReader
 
                 var dialogResult = windowGoToPage.ShowDialog();
 
-                if (dialogResult.HasValue && dialogResult.Value)
+                if (dialogResult.HasValue && dialogResult.Value && windowGoToPage is GoToPageWindow content)
                 {
-                    if (windowGoToPage is GoToPageWindow content)
-                    {
-                        CurrentPage = content.Result - 1;
-                        SetPage();
-                    }
+                    CurrentPage = content.Result - 1;
+                    SetPage();
                 }
             }
         }
@@ -240,7 +228,7 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void DimmedMode_Click(object sender, RoutedEventArgs e)
         {
-            Window windowDimmedMode = new ScreenOpacityWindow(this.Opacity)
+            Window windowDimmedMode = new ScreenOpacityWindow(AppWindow, this.Opacity)
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
@@ -334,16 +322,16 @@ namespace TortillasReader
         {
             MenuItem item = (MenuItem)sender;
 
-            Language = item.Uid switch
+            AppLanguage = item.Uid switch
             {
                 UID_FRENCH => Languages.French,
                 UID_ENGLISH => Languages.English,
-                _ => throw new Exception(Properties.Resources.UnknownLangugage),
+                _ => throw new InvalidOperationException(Properties.Resources.UnknownLangugage),
             };
 
             // Saves the datas, then reload a window with new language.
             OnClosing(new CancelEventArgs());
-            MainWindow newMainWindow = new MainWindow();
+            MainWindow newMainWindow = new();
             newMainWindow.Show();
             this.Close();
         }
@@ -373,7 +361,7 @@ namespace TortillasReader
                     break;
 
                 default:
-                    throw new Exception(Properties.Resources.UnknownTheme);
+                    throw new InvalidOperationException(Properties.Resources.UnknownTheme);
             }
 
             SetAppTheme(backgroundBrush, fontBrush);
@@ -399,6 +387,7 @@ namespace TortillasReader
             this.SizeChanged += Window_SizeChanged;
 
             SetDefaultValues();
+            SetAppTheme(Brushes.White, Brushes.Black);
 
             ResumeRead();
         }
@@ -414,7 +403,7 @@ namespace TortillasReader
         }
 
         /// <summary>
-        /// Events occuring when the app is closing.
+        /// Events occurring when the app is closing.
         /// </summary>
         /// <param name="e">Event.</param>
         protected override void OnClosing(CancelEventArgs e)
@@ -426,11 +415,11 @@ namespace TortillasReader
 
             foreach (var read in reads)
             {
-                JsonHandler.Remove<ResumeReading>(read);
+                JsonHandler.Remove(read);
             }
 
             // Save current book / page number.
-            JsonHandler.Add<ResumeReading>(new ResumeReading()
+            JsonHandler.Add(new ResumeReading()
             {
                 CurrentPage = CurrentPage,
                 LastBook = CurrentFile ?? string.Empty,
@@ -439,7 +428,7 @@ namespace TortillasReader
                 DoublePageMode = DoublePageMode,
                 ComicMode = ComicMode,
                 DisableAnimations = DisableAnimations,
-                Language = Language,
+                Language = AppLanguage,
                 BackgroundColor = BackgroundColor,
                 PageFontColor = PageFontColor,
             });
@@ -465,7 +454,12 @@ namespace TortillasReader
                 SetDoublePageMode(read.DoublePageMode);
                 SetComicMode(read.ComicMode);
                 SetAnimations(read.DisableAnimations);
-                SetAppTheme(read.BackgroundColor, read.PageFontColor);
+
+                if (read.BackgroundColor != null && read.PageFontColor != null)
+                {
+                    SetAppTheme(read.BackgroundColor, read.PageFontColor);
+                }
+
                 SetPage();
             }
         }
@@ -479,19 +473,19 @@ namespace TortillasReader
 
             if (read != null && read.Language != null)
             {
-                Language = read.Language;
+                AppLanguage = read.Language.Value;
 
-                System.Threading.Thread.CurrentThread.CurrentUICulture = Language switch
+                System.Threading.Thread.CurrentThread.CurrentUICulture = AppLanguage switch
                 {
                     Languages.French => new CultureInfo(CULTURE_FR),
                     Languages.English => new CultureInfo(CULTURE_EN),
-                    _ => throw new Exception(Properties.Resources.UnknownLangugage),
+                    _ => throw new InvalidOperationException(Properties.Resources.UnknownLangugage),
                 };
             }
             else
             {
                 // Default in english.
-                Language = Languages.English;
+                AppLanguage = Languages.English;
                 System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(CULTURE_EN);
             }
         }
@@ -557,11 +551,11 @@ namespace TortillasReader
         /// </summary>
         private void SetNextPage()
         {
-            if (CurrentPage + 1 < Archive.FileEntries.Count() - 2)
+            if (CurrentPage + 1 < Archive!.FileEntries.Count() - 2)
             {
                 CurrentPage++;
 
-                if ((int)ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
+                if (ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
                 {
                     CurrentPage++;
                 }
@@ -570,15 +564,15 @@ namespace TortillasReader
                 {
                     foreach (Image image in ImagesCanvas.Children)
                     {
-                        // Create animation
-                        DoubleAnimation animation = new DoubleAnimation();
+                        // Create and configure animation.
+                        DoubleAnimation animation = new()
+                        {
+                            From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image),
+                            To = ComicMode ? -1000 : this.ActualWidth,
+                            Duration = TimeSpan.FromSeconds(0.2)
+                        };
 
-                        // Configure the animation
-                        animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
-                        animation.To = ComicMode ? -1000 : this.ActualWidth;
-                        animation.Duration = TimeSpan.FromSeconds(0.2);
-
-                        // Register the completed event for the animations
+                        // Register the completed event for the animations.
                         animation.Completed += SetPage;
 
                         // Start the animations
@@ -601,7 +595,7 @@ namespace TortillasReader
             {
                 CurrentPage--;
 
-                if ((int)ScrollSpeed == 2 && CurrentPage - 1 >= 0)
+                if (ScrollSpeed == 2 && CurrentPage - 1 >= 0)
                 {
                     CurrentPage--;
                 }
@@ -610,15 +604,15 @@ namespace TortillasReader
                 {
                     foreach (Image image in ImagesCanvas.Children)
                     {
-                        // Create animation
-                        DoubleAnimation animation = new DoubleAnimation();
+                        // Create and configure animation.
+                        DoubleAnimation animation = new()
+                        {
+                            From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image),
+                            To = ComicMode ? this.ActualWidth : -1000,
+                            Duration = TimeSpan.FromSeconds(0.2)
+                        };
 
-                        // Configure the animation
-                        animation.From = double.IsNaN(Canvas.GetLeft(image)) ? 0 : Canvas.GetLeft(image);
-                        animation.To = ComicMode ? this.ActualWidth : -1000;
-                        animation.Duration = TimeSpan.FromSeconds(0.2);
-
-                        // Register the completed event for the animations
+                        // Register the completed event for the animations.
                         animation.Completed += SetPage;
 
                         // Start the animations
@@ -801,7 +795,7 @@ namespace TortillasReader
         /// <summary>
         /// Set the images for the current page given.
         /// </summary>
-        private void SetPage(object sender, EventArgs e)
+        private void SetPage(object? sender, EventArgs e)
         {
             SetPage();
         }
@@ -893,7 +887,7 @@ namespace TortillasReader
         /// <summary>
         /// Return an image from a compressed archive entry.
         /// </summary>
-        /// <param name="archive">Rar archive entry.</param>
+        /// <param name="archive">An archive entry.</param>
         /// <returns>Image.</returns>
         private static ImageSource GetImage(IArchiveFileEntry archive)
         {
@@ -988,7 +982,7 @@ namespace TortillasReader
         /// </summary>
         /// <param name="filePath">Path to a comic book file.</param>
         /// <returns>IArchive containing a manga.</returns>
-        /// <exception cref="Exception">Format is unknow.</exception>
+        /// <exception cref="Exception">Format is unknown.</exception>
         public static IArchive GetArchive(string filePath)
         {
             // Needed for IBM437 error.
@@ -1000,7 +994,7 @@ namespace TortillasReader
                 ".cbz" => new Archive(filePath),
                 ".cbt" => new TarArchive(filePath),
                 ".cb7" => new SevenZipArchive(filePath),
-                _ => throw new Exception(Properties.Resources.UnsupportedFileFormat),
+                _ => throw new InvalidOperationException(Properties.Resources.UnsupportedFileFormat),
             };
         }
     }

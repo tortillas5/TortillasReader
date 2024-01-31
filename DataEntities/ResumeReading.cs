@@ -15,7 +15,7 @@ namespace TortillasReader
         /// <summary>
         /// Position on the disk of the last comic read.
         /// </summary>
-        public string LastBook { get; set; }
+        public string? LastBook { get; set; }
 
         /// <summary>
         /// Scroll speed that was set while reading the last book.
@@ -45,16 +45,16 @@ namespace TortillasReader
         /// <summary>
         /// Define the language of the app.
         /// </summary>
-        public Languages Language { get; set; }
+        public Languages? Language { get; set; }
 
         /// <summary>
         /// Define the background color of the app.
         /// </summary>
-        public Brush BackgroundColor { get; set; }
+        public Brush? BackgroundColor { get; set; }
 
         /// <summary>
         /// Define the color of the font used to display the pages number.
         /// </summary>
-        public Brush PageFontColor { get; set; }
+        public Brush? PageFontColor { get; set; }
     }
 }

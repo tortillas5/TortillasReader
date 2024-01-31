@@ -6,45 +6,50 @@
     using System.Linq;
 
     /// <summary>
-    /// Class handling the database with json files (one per type).
+    /// Class handling the database with JSON files (one per type).
     /// </summary>
-    public class JsonHandler
+    public static class JsonHandler
     {
         /// <summary>
         /// Add an entity to it's database.
         /// </summary>
         /// <typeparam name="T">Type of the entity.</typeparam>
         /// <param name="entity">Entity containing the datas to save.</param>
-        /// <exception cref="Exception">Throw an exception if object already exists.</exception>
-        public void Add<T>(T entity)
+        /// <exception cref="InvalidOperationException">Throw an exception if object already exists.</exception>
+        public static void Add<T>(T entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             List<T> entities;
-            string fichier = this.GetFileContent(this.GetFileNameByType(typeof(T)));
+            string? fichier = GetFileContent(GetFileNameByType(typeof(T)));
 
             if (fichier != null)
             {
-                entities = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(fichier);
+                entities = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(fichier) ?? throw new InvalidOperationException("Erreur lors de la déserialisation de la base de données.");
             }
             else
             {
                 entities = new List<T>();
             }
 
-            if ((entity as DefaultEntity).Id == 0)
+            if ((entity as DefaultEntity)!.Id == 0)
             {
-                (entity as DefaultEntity).Id = this.GetNextId<T>();
+                (entity as DefaultEntity)!.Id = GetNextId<T>();
             }
 
-            if (entities.FirstOrDefault(e => (e as DefaultEntity).Id == (entity as DefaultEntity).Id) != null)
+            if (entities.Find(e => (e as DefaultEntity)!.Id == (entity as DefaultEntity)!.Id) != null)
             {
-                throw new Exception("Impossible d'ajouter un objet déjà présent.");
+                throw new InvalidOperationException("Impossible d'ajouter un objet déjà présent.");
             }
 
             entities.Add(entity);
 
             string serializedObject = Newtonsoft.Json.JsonConvert.SerializeObject(entities);
 
-            using StreamWriter file = new StreamWriter(this.GetFileNameByType(typeof(T)));
+            using StreamWriter file = new(GetFileNameByType(typeof(T)));
             file.Write(serializedObject);
         }
 
@@ -54,10 +59,10 @@
         /// <typeparam name="T">Type of the entity.</typeparam>
         /// <param name="id">Id of an entity.</param>
         /// <returns>An entity.</returns>
-        public T GetById<T>(int id)
+        public static T? GetById<T>(int id)
         {
-            List<T> entities = this.GetEntities<T>();
-            return entities.FirstOrDefault(e => (e as DefaultEntity).Id == id);
+            List<T> entities = GetEntities<T>();
+            return entities.Find(e => (e as DefaultEntity)!.Id == id);
         }
 
         /// <summary>
@@ -65,14 +70,14 @@
         /// </summary>
         /// <typeparam name="T">Type of the entities.</typeparam>
         /// <returns>List of entities.</returns>
-        public List<T> GetEntities<T>()
+        public static List<T> GetEntities<T>()
         {
             List<T> entities;
-            string fichier = this.GetFileContent(this.GetFileNameByType(typeof(T)));
+            string? fichier = GetFileContent(GetFileNameByType(typeof(T)));
 
             if (fichier != null)
             {
-                entities = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(fichier);
+                entities = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(fichier) ?? throw new InvalidOperationException("Erreur lors de la déserialisation de la base de données.");
             }
             else
             {
@@ -87,19 +92,19 @@
         /// </summary>
         /// <typeparam name="T">Type of the entity to remove.</typeparam>
         /// <returns>Number of the next Id to create.</returns>
-        public int GetNextId<T>()
+        public static int GetNextId<T>()
         {
-            List<T> entities = this.GetEntities<T>();
+            List<T> entities = GetEntities<T>();
 
             int nextId;
 
-            if (entities.Count() == 0)
+            if (entities.Count == 0)
             {
                 nextId = 0;
             }
             else
             {
-                nextId = entities.Select(entity => (entity as DefaultEntity).Id).Max();
+                nextId = entities.Select(entity => (entity as DefaultEntity)!.Id).Max();
             }
 
             return nextId + 1;
@@ -110,31 +115,36 @@
         /// </summary>
         /// <typeparam name="T">Type of the entity to remove.</typeparam>
         /// <param name="entity">Entity to remove.</param>
-        /// <exception cref="Exception">Throw an exception if entity don't exists.</exception>
-        public void Remove<T>(T entity)
+        /// <exception cref="InvalidOperationException">Throw an exception if entity don't exists.</exception>
+        public static void Remove<T>(T entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             List<T> entities;
-            string fichier = this.GetFileContent(this.GetFileNameByType(typeof(T)));
+            string? fichier = GetFileContent(GetFileNameByType(typeof(T)));
 
             if (fichier != null)
             {
-                entities = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(fichier);
+                entities = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(fichier) ?? throw new InvalidOperationException("Erreur lors de la déserialisation de la base de données.");
             }
             else
             {
                 entities = new List<T>();
             }
 
-            if (entities.FirstOrDefault(e => (e as DefaultEntity).Id == (entity as DefaultEntity).Id) == null)
+            if (entities.Find(e => (e as DefaultEntity)!.Id == (entity as DefaultEntity)!.Id) == null)
             {
-                throw new Exception("Impossible de supprimer un objet qui n'existe pas.");
+                throw new InvalidOperationException("Impossible de supprimer un objet qui n'existe pas.");
             }
 
-            entities = entities.Where(e => (e as DefaultEntity).Id != (entity as DefaultEntity).Id).ToList();
+            entities = entities.Where(e => (e as DefaultEntity)!.Id != (entity as DefaultEntity)!.Id).ToList();
 
             string serializedObject = Newtonsoft.Json.JsonConvert.SerializeObject(entities);
 
-            using StreamWriter file = new StreamWriter(this.GetFileNameByType(typeof(T)));
+            using StreamWriter file = new(GetFileNameByType(typeof(T)));
             file.Write(serializedObject);
         }
 
@@ -143,11 +153,11 @@
         /// </summary>
         /// <typeparam name="T">Type of the entity to remove.</typeparam>
         /// <param name="id">Id of an entity.</param>
-        public void RemoveById<T>(int id)
+        public static void RemoveById<T>(int id)
         {
-            T entity = this.GetById<T>(id);
+            T? entity = GetById<T>(id);
 
-            this.Remove(entity);
+            Remove(entity);
         }
 
         /// <summary>
@@ -155,18 +165,17 @@
         /// </summary>
         /// <typeparam name="T">Type of the entity to update.</typeparam>
         /// <param name="entity">Entity containing the datas to update.</param>
-        /// <exception cref="Exception">Throw an exception if entity don't exists.</exception>
-        public void Update<T>(T entity)
+        /// <exception cref="InvalidOperationException">Throw an exception if entity don't exists.</exception>
+        public static void Update<T>(T entity)
         {
-            T e = this.GetById<T>((entity as DefaultEntity).Id);
-
-            if (e == null)
+            if (entity == null)
             {
-                throw new Exception("Impossible de mettre à jour un objet qui n'existe pas.");
+                throw new ArgumentNullException(nameof(entity));
             }
 
-            this.Remove(entity);
-            this.Add(entity);
+            _ = GetById<T>((entity as DefaultEntity)!.Id) ?? throw new InvalidOperationException("Impossible de mettre à jour un objet qui n'existe pas.");
+            Remove(entity);
+            Add(entity);
         }
 
         /// <summary>
@@ -174,11 +183,11 @@
         /// </summary>
         /// <param name="saveFileName">Name of the file to get.</param>
         /// <returns>Content of the file retrieved.</returns>
-        private string GetFileContent(string saveFileName)
+        private static string? GetFileContent(string saveFileName)
         {
             try
             {
-                using StreamReader file = new StreamReader(saveFileName);
+                using StreamReader file = new(saveFileName);
                 return file.ReadToEnd();
             }
             catch
@@ -192,7 +201,7 @@
         /// </summary>
         /// <param name="type">Type of an object.</param>
         /// <returns>Filename (xxx.txt).</returns>
-        private string GetFileNameByType(Type type)
+        private static string GetFileNameByType(Type type)
         {
             return type.Name + ".txt";
         }
