@@ -21,19 +21,27 @@ namespace TortillasReader.Windows
     /// </summary>
     public partial class PreviewThumbnailsWindow : Window
     {
+        public int Page { get; set; }
+
         public PreviewThumbnailsWindow(IArchive Archive)
         {
             InitializeComponent();
 
-            int i = 0;
+            this.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            this.Arrange(new Rect(0, 0, this.DesiredSize.Width, this.DesiredSize.Height));
 
-            foreach (var file in Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name))
+            Page = 0;
+
+            var files = Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name);
+
+            for (int i = 0; i < 10; i++)
             {
                 // Get image source.
-                ImageSource imageSource = ImageHelper.GetImage(file);
+                ImageSource imageSource = ImageHelper.GetImage(files.ElementAt(i));
 
-                int height = 100;
-                double width = 50;
+                int padding = 50;
+                double height = (ImagesCanvas.ActualHeight / 2) - (padding * 4);
+                double width = height / 2;
 
                 Image image = new()
                 {
@@ -45,12 +53,24 @@ namespace TortillasReader.Windows
 
                 ImagesCanvas.Children.Add(image);
 
-
                 // Set images positions on the canvas.
-                Canvas.SetTop(image, 0);
-                Canvas.SetLeft(image, 0);
+                if (i < 5)
+                {
+                    Canvas.SetTop(image, padding);
+                }
+                else
+                {
+                    Canvas.SetTop(image, height + padding);
+                }
 
-                i++;
+                if (i < 5)
+                {
+                    Canvas.SetLeft(image, (i * width) + padding);
+                }
+                else
+                {
+                    Canvas.SetLeft(image, ((i - 5) * width) + padding);
+                }
             }
         }
 
