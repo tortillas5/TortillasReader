@@ -25,26 +25,32 @@ namespace TortillasReader.Windows
         {
             InitializeComponent();
 
-            foreach (var file in Archive.FileEntries)
+            int i = 0;
+
+            foreach (var file in Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name))
             {
                 // Get image source.
                 ImageSource imageSource = ImageHelper.GetImage(file);
 
+                int height = 100;
+                double width = 50;
+
                 Image image = new()
                 {
-                    Height = ImagesCanvas.ActualHeight,
-                    Name = file.Name,
+                    Height = height,
+                    Width = width,
+                    Name = "Image_" + i,
                     Source = imageSource
                 };
 
                 ImagesCanvas.Children.Add(image);
 
-                double ratio = ImagesCanvas.ActualHeight * 100.0 / imageSource.Height / 100.0;
-                double actualWidth = imageSource.Width * ratio;
 
                 // Set images positions on the canvas.
                 Canvas.SetTop(image, 0);
-                Canvas.SetLeft(image, (ImagesCanvas.ActualWidth - actualWidth) / 2);
+                Canvas.SetLeft(image, 0);
+
+                i++;
             }
         }
 
