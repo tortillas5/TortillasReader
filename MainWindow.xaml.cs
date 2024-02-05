@@ -15,6 +15,7 @@ using Aspose.Zip.Rar;
 using Aspose.Zip.SevenZip;
 using Aspose.Zip.Tar;
 using Microsoft.Win32;
+using TortillasReader.Windows;
 
 namespace TortillasReader
 {
@@ -497,6 +498,13 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key == Key.E)
+            {
+                Window thumbnails = new PreviewThumbnailsWindow(Archive);
+
+                thumbnails.ShowDialog();
+            }
+
             if (e.Key == Key.F11 && !FullScreenEnabled)
             {
                 OldState = WindowState;
@@ -812,7 +820,7 @@ namespace TortillasReader
                 if (DoublePageMode)
                 {
                     // Get image source.
-                    ImageSource rightImageSource = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
+                    ImageSource rightImageSource = ImageHelper.GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
 
                     Image imageRight = new()
                     {
@@ -833,8 +841,8 @@ namespace TortillasReader
                 else
                 {
                     // Get images sources.
-                    ImageSource rightImageSource = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
-                    ImageSource leftImageSource = GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage + 1));
+                    ImageSource rightImageSource = ImageHelper.GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage));
+                    ImageSource leftImageSource = ImageHelper.GetImage(Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).ElementAt(CurrentPage + 1));
 
                     Image imageRight = new()
                     {
@@ -882,27 +890,6 @@ namespace TortillasReader
                 // Set the page number.
                 PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.FileEntries.Count() - 2).ToString();
             }
-        }
-
-        /// <summary>
-        /// Return an image from a compressed archive entry.
-        /// </summary>
-        /// <param name="archive">An archive entry.</param>
-        /// <returns>Image.</returns>
-        private static ImageSource GetImage(IArchiveFileEntry archive)
-        {
-            BitmapImage bitmapImage = new();
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.StreamSource = new MemoryStream();
-            archive.Extract(bitmapImage.StreamSource);
-            bitmapImage.StreamSource.Position = 0;
-            bitmapImage.EndInit();
-
-            bitmapImage.StreamSource.Close();
-            bitmapImage.StreamSource.Dispose();
-
-            return bitmapImage;
         }
 
         /// <summary>
