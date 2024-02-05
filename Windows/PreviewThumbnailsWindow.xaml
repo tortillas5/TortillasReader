@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:TortillasReader.Windows"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="PreviewThumbnailsWindow">
+      Title="PreviewThumbnailsWindow"
+        Loaded="Window_Loaded">
 
     <Grid>
         <Canvas x:Name="ImagesCanvas" MouseWheel="ImagesCanvas_MouseWheel" Margin="0,0,0,0"/>

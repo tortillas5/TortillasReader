@@ -23,31 +23,39 @@ namespace TortillasReader.Windows
     {
         public int Page { get; set; }
 
-        public PreviewThumbnailsWindow(IArchive Archive)
+        public IArchive Archive { get; set; }
+
+        public PreviewThumbnailsWindow(IArchive archive)
         {
             InitializeComponent();
 
-            this.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            this.Arrange(new Rect(0, 0, this.DesiredSize.Width, this.DesiredSize.Height));
+            Page = 10;
+            Archive = archive;
+        }
 
-            Page = 0;
+        private void ImagesCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // TODO GESTION SCROLL
+        }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             var files = Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name);
+
+            int padding = 25;
+            double height = (ImagesCanvas.ActualHeight / 2) - padding;
+            double width = height / 2;
 
             for (int i = 0; i < 10; i++)
             {
                 // Get image source.
-                ImageSource imageSource = ImageHelper.GetImage(files.ElementAt(i));
-
-                int padding = 50;
-                double height = (ImagesCanvas.ActualHeight / 2) - (padding * 4);
-                double width = height / 2;
+                ImageSource imageSource = ImageHelper.GetImage(files.ElementAt(i + Page));
 
                 Image image = new()
                 {
                     Height = height,
                     Width = width,
-                    Name = "Image_" + i,
+                    Name = "Image_" + (i + Page),
                     Source = imageSource
                 };
 
@@ -57,26 +65,38 @@ namespace TortillasReader.Windows
                 if (i < 5)
                 {
                     Canvas.SetTop(image, padding);
+
+                    double left;
+
+                    if (i == 0)
+                    {
+                        left = (i * width) + padding;
+                    }
+                    else
+                    {
+                        left = (i * width) + (padding * i);
+                    }
+
+                    Canvas.SetLeft(image, left);
                 }
                 else
                 {
                     Canvas.SetTop(image, height + padding);
-                }
 
-                if (i < 5)
-                {
-                    Canvas.SetLeft(image, (i * width) + padding);
-                }
-                else
-                {
-                    Canvas.SetLeft(image, ((i - 5) * width) + padding);
+                    double left;
+
+                    if (i - 5 == 0)
+                    {
+                        left = ((i - 5) * width) + padding;
+                    }
+                    else
+                    {
+                        left = ((i - 5) * width) + (padding * (i - 5));
+                    }
+
+                    Canvas.SetLeft(image, left);
                 }
             }
-        }
-
-        private void ImagesCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            // TODO GESTION SCROLL
         }
     }
 }
