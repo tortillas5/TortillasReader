@@ -1,18 +1,9 @@
 ﻿using Aspose.Zip;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace TortillasReader.Windows
 {
@@ -21,82 +12,110 @@ namespace TortillasReader.Windows
     /// </summary>
     public partial class PreviewThumbnailsWindow : Window
     {
-        public int Page { get; set; }
-
-        public IArchive Archive { get; set; }
-
         public PreviewThumbnailsWindow(IArchive archive)
         {
             InitializeComponent();
 
-            Page = 10;
             Archive = archive;
+            Page = 0;
         }
 
-        private void ImagesCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        public IArchive Archive { get; set; }
+        public int Page { get; set; }
+
+        public int NbParPage { get; set; } = 10;
+
+        public int MoitiePage { get { return NbParPage / 2; } }
+
+        #region Mouse events
+
+        private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            // TODO GESTION SCROLL
+            // up
+            if (e.Delta > 0)
+            {
+                if (Page > 0)
+                {
+                    Page--;
+                }
+            }
+            else
+            {
+                // down
+                Page++;
+            }
+
+            ShowThumbnails();
         }
+
+        #endregion Mouse events
+
+        #region Window events
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var files = Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name);
+            ShowThumbnails();
+        }
 
-            int padding = 25;
-            double height = (ImagesCanvas.ActualHeight / 2) - padding;
-            double width = height / 2;
+        #endregion Window events
 
-            for (int i = 0; i < 10; i++)
+        private void ShowThumbnails()
+        {
+            var files = Archive.FileEntries.Where(fe => fe.Length != 0).OrderBy(fe => fe.Name).Skip(Page * NbParPage).Take(NbParPage);
+
+            double padding = 5;
+            double width = (ImagesCanvas.ActualWidth / (NbParPage / 2)) - (padding * ((NbParPage / 2) + 1));
+            double maxHeight = (ImagesCanvas.ActualHeight / 2) - (padding * 4);
+            int i = 0;
+
+            foreach (var file in files)
             {
                 // Get image source.
-                ImageSource imageSource = ImageHelper.GetImage(files.ElementAt(i + Page));
+                ImageSource imageSource = ImageHelper.GetImage(file);
 
                 Image image = new()
                 {
-                    Height = height,
+                    MaxHeight = maxHeight,
                     Width = width,
-                    Name = "Image_" + (i + Page),
+                    Name = "Image",
                     Source = imageSource
                 };
 
-                ImagesCanvas.Children.Add(image);
+                var imageBorder = new Border
+                {
+                    MaxHeight = maxHeight,
+                    Height = image.Height,
+                    Width = image.Width,
+                    Background = Brushes.White,
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(1),
+                    Child = image
+                };
+
+                ImagesCanvas.Children.Add(imageBorder);
 
                 // Set images positions on the canvas.
-                if (i < 5)
+                if (i < MoitiePage)
                 {
-                    Canvas.SetTop(image, padding);
+                    Canvas.SetTop(imageBorder, padding);
 
-                    double left;
+                    double left = (i * width) + (padding * (i + 1));
 
-                    if (i == 0)
-                    {
-                        left = (i * width) + padding;
-                    }
-                    else
-                    {
-                        left = (i * width) + (padding * i);
-                    }
-
-                    Canvas.SetLeft(image, left);
+                    Canvas.SetLeft(imageBorder, left);
                 }
                 else
                 {
-                    Canvas.SetTop(image, height + padding);
+                    Canvas.SetTop(imageBorder, (padding) + (ImagesCanvas.ActualHeight / 2));
 
-                    double left;
+                    double left = ((i - MoitiePage) * width) + (padding * ((i - MoitiePage) + 1));
 
-                    if (i - 5 == 0)
-                    {
-                        left = ((i - 5) * width) + padding;
-                    }
-                    else
-                    {
-                        left = ((i - 5) * width) + (padding * (i - 5));
-                    }
-
-                    Canvas.SetLeft(image, left);
+                    Canvas.SetLeft(imageBorder, left);
                 }
+
+                i++;
             }
+
+            PageNumber.Content = (Page + 1) * NbParPage;
         }
     }
 }
