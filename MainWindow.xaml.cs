@@ -497,6 +497,46 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            if ((e.Key == Key.O) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                LoadFile_Click(null, null);
+            }
+
+            if ((e.Key == Key.P) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                GoToPage_Click(null, null);
+            }
+
+            if ((e.Key == Key.NumPad1) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                SetScrollSpeed(1);
+            }
+
+            if ((e.Key == Key.NumPad2) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                SetScrollSpeed(2);
+            }
+
+            if ((e.Key == Key.D) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                DoublePageModeMenu.IsChecked = !DoublePageModeMenu.IsChecked;
+                SetDoublePageMode(DoublePageModeMenu.IsChecked);
+                SetPage();
+            }
+
+            if ((e.Key == Key.C) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                ComicModeMenu.IsChecked = !ComicModeMenu.IsChecked;
+                SetComicMode(ComicModeMenu.IsChecked);
+                SetPage();
+            }
+
+            if ((e.Key == Key.A) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                AnimationsMenu.IsChecked = !AnimationsMenu.IsChecked;
+                SetAnimations(AnimationsMenu.IsChecked);
+            }
+
             if (e.Key == Key.F11 && !FullScreenEnabled)
             {
                 OldState = WindowState;

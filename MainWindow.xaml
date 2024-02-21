@@ -13,16 +13,16 @@
         <DockPanel VerticalAlignment="Top" Height="18" Panel.ZIndex="200">
             <Menu DockPanel.Dock="Top">
                 <MenuItem IsTabStop="False" Header="{x:Static local:Resources.Settings}">
-                    <MenuItem Header="{x:Static local:Resources.LoadFile}" Click="LoadFile_Click"/>
-                    <MenuItem Header="{x:Static local:Resources.GoToPage}" Click="GoToPage_Click"/>
+                    <MenuItem Header="{x:Static local:Resources.LoadFile}" InputGestureText="Ctrl+O" Click="LoadFile_Click"/>
+                    <MenuItem Header="{x:Static local:Resources.GoToPage}" InputGestureText="Ctrl+P" Click="GoToPage_Click"/>
                     <MenuItem Header="{x:Static local:Resources.PageScrollingSpeed}">
-                        <MenuItem Header="1" IsCheckable="True" Click="ChangeScrollSpeed" x:Name="ScrollSpeed1"/>
-                        <MenuItem Header="2" IsCheckable="True" Click="ChangeScrollSpeed" x:Name="ScrollSpeed2"/>
+                        <MenuItem Header="1" InputGestureText="Ctrl+1" IsCheckable="True" Click="ChangeScrollSpeed" x:Name="ScrollSpeed1"/>
+                        <MenuItem Header="2" InputGestureText="Ctrl+2" IsCheckable="True" Click="ChangeScrollSpeed" x:Name="ScrollSpeed2"/>
                     </MenuItem>
                     <MenuItem Header="{x:Static local:Resources.DarkScreenMode}" Click="DimmedMode_Click"/>
-                    <MenuItem Header="{x:Static local:Resources.DoublePageMode}" IsCheckable="True" Click="ToggleDoublePageMode" x:Name="DoublePageModeMenu"/>
-                    <MenuItem Header="{x:Static local:Resources.ComicMode}" IsCheckable="True" Click="ToggleComicMode" x:Name="ComicModeMenu"/>
-                    <MenuItem Header="{x:Static local:Resources.DisableAnimations}" IsCheckable="True" Click="ToggleAnimations" x:Name="AnimationsMenu"/>
+                    <MenuItem Header="{x:Static local:Resources.DoublePageMode}" InputGestureText="Ctrl+D" IsCheckable="True" Click="ToggleDoublePageMode" x:Name="DoublePageModeMenu"/>
+                    <MenuItem Header="{x:Static local:Resources.ComicMode}" InputGestureText="Ctrl+C" IsCheckable="True" Click="ToggleComicMode" x:Name="ComicModeMenu"/>
+                    <MenuItem Header="{x:Static local:Resources.DisableAnimations}" InputGestureText="Ctrl+A" IsCheckable="True" Click="ToggleAnimations" x:Name="AnimationsMenu"/>
                     <Separator />
                     <MenuItem Header="{x:Static local:Resources.Leave}" Click="Exit_Click"/>
                 </MenuItem>
