@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Aspose.Zip;
+using Aspose.Zip.Rar;
+using Aspose.Zip.SevenZip;
+using Aspose.Zip.Tar;
+using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -9,12 +14,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using Aspose.Zip;
-using Aspose.Zip.Rar;
-using Aspose.Zip.SevenZip;
-using Aspose.Zip.Tar;
-using Microsoft.Win32;
 using TortillasReader.Windows;
 
 namespace TortillasReader
@@ -498,10 +497,9 @@ namespace TortillasReader
         /// <param name="e"></param>
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.E)
+            if (e.Key == Key.E && Archive != null)
             {
                 Window thumbnails = new PreviewThumbnailsWindow(Archive);
-
                 thumbnails.ShowDialog();
             }
 

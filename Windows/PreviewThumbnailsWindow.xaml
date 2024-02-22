@@ -8,9 +8,11 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PreviewThumbnailsWindow"
       Loaded="Window_Loaded"
-      MouseWheel="Window_MouseWheel">
+      MouseWheel="Window_MouseWheel"
+      SizeChanged="Window_SizeChanged"
+      MinHeight="500">
     <Grid>
-        <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,0,0" Panel.ZIndex="200"/>
+        <Label x:Name="PageNumber" Content="Pages" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,0,0" Panel.ZIndex="200" />
         <Canvas x:Name="ImagesCanvas" Margin="0,0,0,0" />
     </Grid>
 </Window>

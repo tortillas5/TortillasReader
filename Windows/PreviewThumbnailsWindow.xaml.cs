@@ -21,11 +21,12 @@ namespace TortillasReader.Windows
         }
 
         public IArchive Archive { get; set; }
-        public int Page { get; set; }
+
+        public int MoitiePage
+        { get { return NbParPage / 2; } }
 
         public int NbParPage { get; set; } = 10;
-
-        public int MoitiePage { get { return NbParPage / 2; } }
+        public int Page { get; set; }
 
         #region Mouse events
 
@@ -68,6 +69,8 @@ namespace TortillasReader.Windows
             double maxHeight = (ImagesCanvas.ActualHeight / 2) - (padding * 4);
             int i = 0;
 
+            ImagesCanvas.Children.Clear();
+
             foreach (var file in files)
             {
                 // Get image source.
@@ -94,28 +97,33 @@ namespace TortillasReader.Windows
 
                 ImagesCanvas.Children.Add(imageBorder);
 
+                int numImage;
+
                 // Set images positions on the canvas.
                 if (i < MoitiePage)
                 {
                     Canvas.SetTop(imageBorder, padding);
-
-                    double left = (i * width) + (padding * (i + 1));
-
-                    Canvas.SetLeft(imageBorder, left);
+                    numImage = i;
                 }
                 else
                 {
-                    Canvas.SetTop(imageBorder, (padding) + (ImagesCanvas.ActualHeight / 2));
-
-                    double left = ((i - MoitiePage) * width) + (padding * ((i - MoitiePage) + 1));
-
-                    Canvas.SetLeft(imageBorder, left);
+                    Canvas.SetTop(imageBorder, padding + (ImagesCanvas.ActualHeight / 2));
+                    numImage = i - MoitiePage;
                 }
+
+                double left = (numImage * width) + (padding * (numImage + 1));
+                Canvas.SetLeft(imageBorder, left);
 
                 i++;
             }
 
             PageNumber.Content = (Page + 1) * NbParPage;
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //ImagesCanvas.
+
         }
     }
 }
