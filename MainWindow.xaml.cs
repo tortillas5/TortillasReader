@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Aspose.Zip;
+using Aspose.Zip.Rar;
+using Aspose.Zip.SevenZip;
+using Aspose.Zip.Tar;
+using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -10,11 +15,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Aspose.Zip;
-using Aspose.Zip.Rar;
-using Aspose.Zip.SevenZip;
-using Aspose.Zip.Tar;
-using Microsoft.Win32;
 
 namespace TortillasReader
 {
@@ -60,6 +60,7 @@ namespace TortillasReader
 
         /// <summary>
         /// Enable the double page mode (for when books have images containing double pages).
+        /// Show only one page at a time when enabled.
         /// </summary>
         public bool DoublePageMode { get; set; }
 
@@ -591,11 +592,11 @@ namespace TortillasReader
         /// </summary>
         private void SetNextPage()
         {
-            if (CurrentPage + 1 < Archive!.FileEntries.Count() - 2)
+            if ((CurrentPage + 1 < Archive!.FileEntries.Count() - 1 && DoublePageMode) || (CurrentPage + 1 < Archive!.FileEntries.Count() - 2 && !DoublePageMode))
             {
                 CurrentPage++;
 
-                if (ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 2)
+                if ((ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 1 && DoublePageMode) || (ScrollSpeed == 2 && CurrentPage + 1 < Archive.FileEntries.Count() - 2 && !DoublePageMode))
                 {
                     CurrentPage++;
                 }
@@ -845,7 +846,7 @@ namespace TortillasReader
         /// </summary>
         private void SetPage()
         {
-            if (Archive != null && CurrentPage < Archive.FileEntries.Count() - 2 && CurrentPage >= 0)
+            if ((Archive != null && CurrentPage < Archive.FileEntries.Count() - 1 && CurrentPage >= 0 && DoublePageMode) || (Archive != null && CurrentPage < Archive.FileEntries.Count() - 2 && CurrentPage >= 0 && !DoublePageMode))
             {
                 ImagesCanvas.Children.Clear();
 
@@ -920,7 +921,14 @@ namespace TortillasReader
                 ImageIsZoomed = false;
 
                 // Set the page number.
-                PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.FileEntries.Count() - 2).ToString();
+                if (DoublePageMode)
+                {
+                    PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.FileEntries.Count() - 1).ToString();
+                }
+                else
+                {
+                    PageNumber.Content = (CurrentPage + 1).ToString() + " / " + (Archive.FileEntries.Count() - 2).ToString();
+                }
             }
         }
 
